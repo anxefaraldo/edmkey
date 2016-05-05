@@ -8,7 +8,7 @@ from fodules.folder import make_unique_dir
 from argparse import ArgumentParser
 
 clock()
-parser = ArgumentParser(description="KEY ESTIMATION ALGORITHM")
+parser = ArgumentParser(description="key estimation algorithm")
 parser.add_argument("input",
                     help="file or dir to analyse")
 parser.add_argument("-x", "--xtra",
@@ -17,8 +17,11 @@ parser.add_argument("-x", "--xtra",
 parser.add_argument("-v", "--verbose",
                     action="store_true",
                     help="print estimations to console")
+parser.add_argument("-o", "--overwrite",
+                    action="store_true",
+                    help="overwrite existing subdir if exists.")
 parser.add_argument("-w", "--write_to",
-                    help="dir to export results")
+                    help="specify dir to export results")
 args = parser.parse_args()
 
 if args.write_to:
@@ -53,7 +56,9 @@ else:
     print 'Analysing files...'
     count_files = 0
     if args.xtra:
-        print "You have selected extra analysis details. This might take a while."
+        print "You have selected extra analysis features. This might take a while."
+    else:
+        print "Simple analysis."
     for item in list_all_files:
         if any(soundfile_type in item for soundfile_type in AUDIO_FILE_TYPES):
             audiofile = args.input + '/' + item

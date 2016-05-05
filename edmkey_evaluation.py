@@ -48,7 +48,7 @@ else:
             # assuming that Tonic Mode separated by a Space:
             est_string = est_string.split('\t')
             est_key = est_string[1]
-            # est_confidence = est_string[2] # TODO: make sure we don't need this!
+            est_confidence = est_string[2]
             est = key_to_list(est_key)
             est_file.close()
             try:

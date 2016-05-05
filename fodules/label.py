@@ -19,7 +19,7 @@ def name_to_class(key):
                   'A': 9, 'A#': 10,
                   'Bb': 10, 'B': 11,
                   'Cb': 11,
-                  'none': 12, '-': 12, '': 12}
+                  'none': 12, '-': 12}
     return name2class[key]
 
 
@@ -30,9 +30,7 @@ def mode_to_num(mode):
     """
     mode2num = {''       : 0,
                 'major'  : 0,
-                'mino'  : 1,
-                'majo ': 0,
-                'minor ': 1,
+                'minor'  : 1,
                 'other'  : 2,
                 'peak'   : 3,
                 'flat'   : 4,

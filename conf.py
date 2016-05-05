@@ -50,3 +50,4 @@ N_WINDOWS                = 100  # when ANALYSIS_TYPE is set to local
 WINDOW_INCREMENT         = 100  # when ANALYSIS_TYPE is set to local
 KEY_PROFILE              = 'bmtg2'  # ['bmtg1', 'bmtg2', 'bmtg3', 'edma'] 'edmm' should be obsolete.
 USE_THREE_PROFILES       = True
+

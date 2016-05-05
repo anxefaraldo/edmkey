@@ -10,10 +10,10 @@ def xls_to_key_annotations(excel_file, sheet_index, export_directory):
     for row in range(spreadsheet.nrows):
         v = spreadsheet.row_values(row)
         txt = open(export_directory + '/' + v[0] + '.key', 'w')
-        if 'm' in v[1]:
-            txt.write(v[0] + '\t' + v[1][:v[1].find('m')] + ' minor\n')
+        if len(v[1]) > 3:
+            txt.write(v[1] + '\n')
         else:
-            txt.write(v[0] + '\t' + v[1] + ' major\n')
+            txt.write(v[1] + ' major\n')
         txt.close()
 
 
