@@ -81,3 +81,9 @@ def extract_median_pcp(dir_estimations, dir_annotations, pcp_size=36):
             pcp = transpose_pcp(pcp, name_to_class(root))
             accumulate_profiles.append(pcp)
     return np.median(accumulate_profiles, axis=0)
+
+def pcp_gate(pcp, threshold):
+    for i in range(len(pcp)):
+        if pcp[i] < threshold:
+            pcp[i] = 0
+    return pcp

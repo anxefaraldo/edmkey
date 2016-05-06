@@ -3,6 +3,7 @@ import numpy as np
 from collections import Counter
 import essentia.standard as estd
 from fodules.pcp import shift_pcp
+from fodules.pcp import pcp_gate
 
 
 def key_estimate(soundfile, write_to):
@@ -69,6 +70,7 @@ def key_estimate(soundfile, write_to):
         if SPECTRAL_WHITENING:
             p2 = sw(spek, p1, p2)
         pcp = hpcp(p1, p2)
+        #  pcp = pcp_gate(pcp, PCP_THRESHOLD)  # TODO: EXPERIMENTAL!
         if not DETUNING_CORRECTION or SHIFT_SCOPE == 'average':
             chroma.append(pcp)
         elif DETUNING_CORRECTION and SHIFT_SCOPE == 'frame':
