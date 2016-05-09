@@ -31,8 +31,8 @@ const char* KeyEDM::description = DOC("Using pitch profile classes, this algorit
 "Key will throw exceptions either when the input pcp size is not a positive multiple of 12 or if the key could not be found."
 "\n"
 "  Abouth the Key Profiles:\n"
-"  - 'edma' - automatic profiles extracted from corpus analysis of electronic dance music [3]. They normally perform better that Shaath's\n"
-"  - 'edmm' - automatic profiles extracted from corpus analysis of electronic dance music and manually tweaked according to heuristic observation. It will report major modes (which are poorly represented in EDM) as minor, but improve performance otherwise [3].\n"
+"  - 'edma' - automatic profiles extracted from corpus analysis of electronic dance music [2]. They normally perform better that Shaath's\n"
+"  - 'edmm' - automatic profiles extracted from corpus analysis of electronic dance music and manually tweaked according to heuristic observation. It will report major modes (which are poorly represented in EDM) as minor, but improve performance otherwise [2].\n"
 
 "References:\n"
 "  [1] E. Gómez, \"Tonal Description of Polyphonic Audio for Music Content\n"

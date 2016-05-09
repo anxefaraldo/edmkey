@@ -16,7 +16,7 @@ SKIP_FIRST_MINUTE   = False
 SPECTRAL_WHITENING  = True
 DETUNING_CORRECTION = True
 SHIFT_SCOPE         = 'average'  # ['average', 'frame']
-PCP_THRESHOLD       = 0.3
+PCP_THRESHOLD       = 0.5
 
 # FFT
 # ---
@@ -49,6 +49,5 @@ HPCP_WEIGHT_TYPE        = 'cosine'   # ['none', 'cosine', 'squaredCosine']
 ANALYSIS_TYPE            = 'global'  # ['local', 'global']
 N_WINDOWS                = 100  # when ANALYSIS_TYPE is set to local
 WINDOW_INCREMENT         = 100  # when ANALYSIS_TYPE is set to local
-KEY_PROFILE              = 'bmtg3'  # ['bmtg1', 'bmtg2', 'bmtg3', 'edma'] 'edmm' should be obsolete.
-USE_THREE_PROFILES       = False
-
+KEY_PROFILE              = 'bmtg2'  # ['bmtg1', 'bmtg2', 'bmtg3', 'edma'] 'edmm' should be obsolete.
+USE_THREE_PROFILES       = True
