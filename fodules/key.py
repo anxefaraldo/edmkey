@@ -86,6 +86,7 @@ def key_estimate(soundfile, write_to):
                 pcp = pcp.tolist()
                 local_key = key(pcp)
                 local_result = local_key[0] + ' ' + local_key[1]
+                print local_result
                 keys.append(local_result)
                 chroma = chroma[WINDOW_INCREMENT:]
         frame_start += HOP_SIZE
