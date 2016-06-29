@@ -1,0 +1,52 @@
+{
+  "edmkey_settings": {
+    "global": {
+      "sample_rate": 44100,
+      "highpass_cutoff": 200,
+      "audio_file_types": [".wav", ".mp3", "flac", ".aiff", ".ogg"]
+    },
+    "faraldo": {
+      "avoid_percentage_of_edges": 0,
+      "first_n_secs": 30,
+      "skip_first_minute": false,
+      "spectral_whitening": true,
+      "detuning_correction": true,
+      "shift_scope_options": ["average", "frame"],
+      "shift_scope": "average",
+      "pcp_threshold": 0.5
+    },
+    "fft": {
+      "window_size": 4096,
+      "hop_size": 4096,
+      "window_type": "hann",
+      "min_hz": 25,
+      "max_hz": 3500
+    },
+    "spectral_peaks": {
+      "threshold": 0.0001,
+      "max_peaks": 60
+    },
+    "hpcp": {
+      "band_preset": false,
+      "split_frequency": 250,
+      "num_harmonics": 4,
+      "non_linear": true,
+      "normalize": true,
+      "shift": false,
+      "tuning_reference": 440,
+      "size": 36,
+      "weight_window_size": 1,
+      "weight_types": ["none", "cosine", "squaredCosine"],
+      "weight_type": "cosine"
+    },
+    "key": {
+      "analysis_scopes": ["local", "global"],
+      "analysis_scope": "global",
+      "num_windows_per_analysis": 100,
+      "window_increment": 100,
+      "profiles": ["bmtg1", "bmtg2", "bmtg3", "edma", "edmm"],
+      "profile": "bmtg2",
+      "use_three_profiles": true
+    }
+  }
+}

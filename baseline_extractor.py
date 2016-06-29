@@ -19,7 +19,8 @@ def essentia_key_extractor(soundfile, folder_to_write_results):
     key, scale, strength = key(loader())
     result = key + ' ' + scale
     confidence = strength
-    textfile = open(folder_to_write_results + soundfile[soundfile.rfind('/'):soundfile.rfind('.')] + '.key', 'w')
+    filename = soundfile[soundfile.rfind('/'):soundfile.rfind('.')]
+    textfile = open(folder_to_write_results + filename + '.key', 'w')
     results_string = result + '\t' + '%.2f' % confidence
     textfile.write(results_string)
     textfile.close()
@@ -44,11 +45,10 @@ if __name__ == "__main__":  # Todo: implement this with argparse!
     import sys
     try:
         os.path.isdir(sys.argv[1])
-        estimations_folder = create_subfolder_with_nowtime(sys.argv[1], tag='essentia_extractor - ', overwrite=False)
+        estimations_folder = make_unique_dir(sys.argv[1], tag='essentia_extractor - ')
         essentia_key_extractor_batch(sys.argv[1], estimations_folder)
     except NameError:
         print sys.argv[1], 'is not a folder.'
-        print 'usage:', sys.argv[0], '<folder_with_audio> <folder_to_write_estimations> <label/tag>\n'
+        print 'usage:', sys.argv[0], '<folder_with_audio> <folder_to_write_estimations> <tag>\n'
         sys.exit()
-
 
