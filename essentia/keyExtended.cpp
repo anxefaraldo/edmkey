@@ -34,14 +34,12 @@ const char* KeyExtended::description = DOC("Using pitch profile classes, this al
 "  [1] E. Gómez, \"Tonal Description of Polyphonic Audio for Music Content\n"
 "  Processing,\" INFORMS Journal on Computing, vol. 18, no. 3, pp. 294–304,\n"
 "  2006.\n\n"
-"  [3] Á. Faraldo, E. Gómez, S. Jordà, P.Herrera, \"Key Estimation in Electronic\n"
+"  [2] Á. Faraldo, E. Gómez, S. Jordà, P.Herrera, \"Key Estimation in Electronic\n"
 "  Dance Music. Proceedings of the 38th International Conference on information\n"
 "  Retrieval, Padova, 2016.");
 
 
 void KeyExtended::configure() {
-
- // _profileType = parameter("profileType").toString();
 
   const char* keyNames[] = { "A", "Bb", "B", "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab" };
   _keys = arrayToVector<string>(keyNames);
@@ -67,26 +65,8 @@ void KeyExtended::configure() {
   
 };
 
-/* OTHER PROFILES
-
-  { 1.00, 0.10, 0.42, 0.10, 0.53, 0.37, 0.10, 0.77, 0.10, 0.38, 0.21, 0.30 }, // major (standard) (bmtg2)
-  { 1.00, 0.10, 0.36, 0.39, 0.29, 0.38, 0.10, 0.74, 0.27, 0.10, 0.42, 0.23 }, // minor (standard) (bmtg2)
-  { 1.00, 0.26, 0.35, 0.29, 0.44, 0.36, 0.21, 0.78, 0.26, 0.25, 0.32, 0.26 }  // empty
-
-    { 1.00, 0.33, 0.48, 0.40, 0.54, 0.53, 0.27, 0.86, 0.37, 0.38, 0.52, 0.42 }, // ambiguous (maj as min)
-  { 1.00, 0.47, 0.45, 0.43, 0.70, 0.54, 0.42, 0.96, 0.42, 0.5,  0.44, 0.38 }, // ambiguous (min as maj)
-
-  { 1.00, 0.2343, 0.4262, 0.3018, 0.5230, 0.4248, 0.1911, 0.7931, 0.2358, 0.3472, 0.3683, 0.2778 }, // from minasmaj  
-  { 1.00, 0.1959, 0.3361, 0.2289, 0.3340, 0.3308, 0.1530, 0.6926, 0.2355, 0.2233, 0.3211, 0.2392 }, // from majasmin    
-*/
 
 #define SET_PROFILE(i) _M1 = arrayToVector<Real>(profileTypes[10*i]); _m1 = arrayToVector<Real>(profileTypes[10*i+1]); _M2 = arrayToVector<Real>(profileTypes[10*i+2]); _m2 = arrayToVector<Real>(profileTypes[10*i+3]); _M3 = arrayToVector<Real>(profileTypes[10*i+4]); _m3 = arrayToVector<Real>(profileTypes[10*i+5]); _M4 = arrayToVector<Real>(profileTypes[10*i+6]); _m4 = arrayToVector<Real>(profileTypes[10*i+7]); _P = arrayToVector<Real>(profileTypes[10*i+8]); _F = arrayToVector<Real>(profileTypes[10*i+9])
-
-  /* if (_profileType == "faraldo1")  { SET_PROFILE(0); }
-  else {
-    throw EssentiaException("KeyExtended: Unsupported profile type: ", _profileType);
-  }
- */
 
   SET_PROFILE(0);
   resize(parameter("pcpSize").toInt());
@@ -118,10 +98,10 @@ void KeyExtended::compute() {
   std_pcp = sqrt(std_pcp);
 
   // Correlation Matrix
-  int keyIndex = -1; // index of the first maximum
+  int keyIndex = -1;     // index of the first maximum
   Real max     = -1;     // first maximum
-  Real max2    = -1;    // second maximum
-  int scale    = MAJOR1;  // scale
+  Real max2    = -1;     // second maximum
+  int scale    = MAJOR1; // scale
 
   // Compute maximum for all profiles.
   Real maxMaj1     = -1;
@@ -156,7 +136,7 @@ void KeyExtended::compute() {
   Real max2Min4    = -1;
   int keyIndexMin4 = -1;
 
-	Real maxPeak     = -1;
+  Real maxPeak     = -1;
   Real max2Peak    = -1;
   int keyIndexPeak = -1;
 
@@ -169,6 +149,7 @@ void KeyExtended::compute() {
   // we shift the profile around to find the best match
   for (int shift=0; shift<pcpsize; shift++) {
     Real corrMaj1 = correlation(pcp, mean_pcp, std_pcp, _profile_doM1, _mean_profile_M1, _std_profile_M1, shift);
+        // Compute maximum value for Maj1 keys...
     if (corrMaj1 > maxMaj1) {
       max2Maj1 = maxMaj1;
       maxMaj1 = corrMaj1;
@@ -183,7 +164,6 @@ void KeyExtended::compute() {
     }
 
     Real corrMaj2 = correlation(pcp, mean_pcp, std_pcp, _profile_doM2, _mean_profile_M2, _std_profile_M2, shift);
-    // Compute maximum value for major keys
     if (corrMaj2 > maxMaj2) {
       max2Maj2 = maxMaj2;
       maxMaj2 = corrMaj2;
@@ -198,7 +178,6 @@ void KeyExtended::compute() {
     }   
 
     Real corrMaj3 = correlation(pcp, mean_pcp, std_pcp, _profile_doM3, _mean_profile_M3, _std_profile_M3, shift);
-    // Compute maximum value for major keys
     if (corrMaj3 > maxMaj3) {
       max2Maj3 = maxMaj3;
       maxMaj3 = corrMaj3;
@@ -213,7 +192,6 @@ void KeyExtended::compute() {
     }  
 
     Real corrMaj4 = correlation(pcp, mean_pcp, std_pcp, _profile_doM4, _mean_profile_M4, _std_profile_M4, shift);
-    // Compute maximum value for major keys
     if (corrMaj4 > maxMaj4) {
       max2Maj4 = maxMaj4;
       maxMaj4 = corrMaj4;
@@ -228,15 +206,13 @@ void KeyExtended::compute() {
     }  
 
     Real corrPeak = correlation(pcp, mean_pcp, std_pcp, _profile_doP, _mean_profile_P, _std_profile_P, shift);
-    // Compute maximum value for major keys
     if (corrPeak > maxPeak) {
       max2Peak = maxPeak;
       maxPeak = corrPeak;
       keyIndexPeak = shift;
     }
 
-		Real corrFlat = correlation(pcp, mean_pcp, std_pcp, _profile_doF, _mean_profile_F, _std_profile_F, shift);
-    // Compute maximum value for major keys
+	Real corrFlat = correlation(pcp, mean_pcp, std_pcp, _profile_doF, _mean_profile_F, _std_profile_F, shift);
     if (corrFlat > maxFlat) {
       max2Flat = maxFlat;
       maxFlat = corrFlat;
@@ -259,7 +235,7 @@ void KeyExtended::compute() {
     max2 = max2Min1;
     }
 
-	else if (maxMaj2 > maxMaj1 && maxMaj2 > maxMin1 && maxMaj2 > maxMin2 && maxMaj2 > maxMaj3 && maxMaj2 > maxMin3 && maxMaj2 > maxMaj4 && maxMaj2 > maxMin4 && maxMaj2 > maxPeak && maxMaj2 > maxFlat) {
+  else if (maxMaj2 > maxMaj1 && maxMaj2 > maxMin1 && maxMaj2 > maxMin2 && maxMaj2 > maxMaj3 && maxMaj2 > maxMin3 && maxMaj2 > maxMaj4 && maxMaj2 > maxMin4 && maxMaj2 > maxPeak && maxMaj2 > maxFlat) {
     keyIndex = (int) (keyIndexMaj2 * 12 / pcpsize + 0.5);
     scale = MAJOR2;
     max = maxMaj2;
@@ -325,7 +301,6 @@ void KeyExtended::compute() {
   // first three outputs are key, scale and strength
   _key.get() = _keys[keyIndex];
 
-  //  _scale.get() = scale == MAJOR ? "major" : "minor";
   if (scale == MAJOR1) {
     _scale.get() = "ionian";
   }
@@ -497,6 +472,7 @@ void KeyExtended::resize(int pcpsize) {
   _std_profile_F  = sqrt(_std_profile_F);
 }
 
+
 // correlation coefficient with 'shift'
 // one of the vectors is shifted in time, and then the correlation is calculated,
 // just like a cross-correlation
@@ -561,7 +537,6 @@ AlgorithmStatus KeyExtended::process() {
   string scale;
   Real strength;
   Real firstToSecondRelativeStrength;
-  //_keyExtendedAlgo->configure("profileType", "faraldo");
   _keyExtendedAlgo->input("pcp").set(hpcpAverage);
   _keyExtendedAlgo->output("key").set(key);
   _keyExtendedAlgo->output("scale").set(scale);

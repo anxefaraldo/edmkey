@@ -1,5 +1,8 @@
 import xlrd
 import xlwt
+import csv
+from numpy import array as nparray
+from fodules.label import key_to_int
 
 
 def xls_to_key_annotations(excel_file, sheet_index, export_directory):
@@ -45,3 +48,22 @@ def matrix_to_excel(my_matrix,
         next_row += 1
 
     wb.save(filename)
+
+
+def features_from_csv(csv_file, start_col=0, end_col=1):
+    saved_values = []
+    csv_file = open(csv_file, 'r')
+    csv_file = csv.reader(csv_file, skipinitialspace=True)
+    for row in csv_file:
+        saved_values.append(map(float, row[start_col:end_col]))
+    return nparray(saved_values)
+
+
+def stringcell_from_csv(csv_file, col=27):
+    saved_values = []
+    csv_file = open(csv_file, 'r')
+    csv_file = csv.reader(csv_file, skipinitialspace=True)
+    for row in csv_file:
+        saved_values.append(row[col])
+    return nparray(saved_values)
+

@@ -11,10 +11,10 @@ from fodules.excel import matrix_to_excel
 parser = argparse.ArgumentParser(prog='edmkey_evaluation',
                                  formatter_class=argparse.RawDescriptionHelpFormatter,
                                  description='''
-    Automatic evaluation of key estimations
+    Automatic Evaluation of Key Estimations
     =======================================
     This implementation relies on our own analysis format.
-    We expect a single estimation files per audio track
+    We expect a single estimation file per audio track
     with tab-separated fields. Only the first two fields
     are mandatory:
     "filename (tab) key (tab) confidence (tab) pcp (tab) max_peak_pcp (tab) ..."
@@ -46,7 +46,7 @@ else:
             est_file = open(args.estimations + '/' + element, 'r')
             est_string = est_file.readline()
             # assuming that Tonic Mode separated by a Space:
-            est_string = est_string.split('\t')
+            est_string = est_string.split(',')
             est_key = est_string[1]
             est_confidence = est_string[2]
             est = key_to_list(est_key)
@@ -66,9 +66,9 @@ else:
             type_error = error_type(est, ann)
             results_errors.append(type_error[0])
             type_error = type_error[1]
-            output = "\t{0}\t{1}\t{2}".format(ann_key,
-                                              type_error,
-                                              score_mirex)
+            output = "{0},{1},{2}".format(ann_key,
+                                          type_error,
+                                          score_mirex)
             append_results = open(args.estimations + '/' + element, 'a')
             append_results.write(output)
             append_results.close()

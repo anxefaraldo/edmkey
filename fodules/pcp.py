@@ -84,7 +84,31 @@ def extract_median_pcp(dir_estimations, dir_annotations, pcp_size=36):
 
 
 def pcp_gate(pcp, threshold):
+    """
+    Zeroes vector elements with values under a certain threshold.
+    """
     for i in range(len(pcp)):
         if pcp[i] < threshold:
             pcp[i] = 0
     return pcp
+
+
+def pcp_sort(pcp):
+    """
+    Returns a new vector with sorted indexes of the incoming pcp vector.
+    """
+    pcp = pcp[:]
+    idx = []
+    for i in range(len(pcp)):
+        new_index = pcp.index(np.max(pcp))
+        idx.append(new_index)
+        pcp[new_index] = -1
+    return idx
+
+
+def bin_to_pc(binary, pcp_size=36):
+    """
+    Returns the pitch-class of the specified pcp vector.
+    It assumes (bin[0] == pc9) as implemeted in Essentia.
+    """
+    return (int(binary / (pcp_size / 12.0)) + 9) % 12

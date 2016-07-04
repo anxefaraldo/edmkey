@@ -1,9 +1,7 @@
 from conf import *
-import numpy as np
+from fodules.pcp import *
 from collections import Counter
 import essentia.standard as estd
-from fodules.pcp import shift_pcp
-from fodules.pcp import pcp_gate
 
 
 def key_estimate(soundfile, write_to):
@@ -97,6 +95,10 @@ def key_estimate(soundfile, write_to):
         if DETUNING_CORRECTION and SHIFT_SCOPE == 'average':
             chroma = shift_pcp(list(chroma), HPCP_SIZE)
         chroma = chroma.tolist()
+        ordered_peaks = pcp_sort(chroma)
+        peaks_pcs = []
+        for item in ordered_peaks:
+            peaks_pcs.append(bin_to_pc(item, HPCP_SIZE))
         estimation = key(chroma)
         chroma = str(chroma)[1:-1]
         key = estimation[0] + ' ' + estimation[1]
@@ -106,16 +108,18 @@ def key_estimate(soundfile, write_to):
         key = mode.most_common(1)[0][0]
         confidence = 0.0
         chroma = ['N/A']
+        peaks_pcs = ['N/A']
     else:
         raise NameError("ANALYSIS_TYPE must be set to either 'local' or 'global'")
     if 'minor2' in key:
         key.split(' ')
         key = "{0} minor".format(key[0])
     filename = soundfile[soundfile.rfind('/') + 1:soundfile.rfind('.')]
-    raw_output = "{0}\t{1}\t{2:.2f}\t{3}".format(filename,
-                                                 key,
-                                                 confidence,
-                                                 chroma)
+    raw_output = "{0},{1},{2:.2f},{3},{4},".format(filename,
+                                                   key,
+                                                   confidence,
+                                                   chroma,
+                                                   str(peaks_pcs)[1:-1])
     textfile = open(write_to + '/' + filename + '.key', 'w')
     textfile.write(raw_output)
     textfile.close()
@@ -123,7 +127,8 @@ def key_estimate(soundfile, write_to):
 
 
 def key_estimate_extended(soundfile, write_to):
-    """This function estimates the overall key of an audio track.
+    """This function estimates the overall key of an audio track
+    with extra modal information.
     :type soundfile: str
     :type write_to: str"""
     loader = estd.MonoLoader(filename=soundfile,
@@ -262,7 +267,7 @@ def key_estimate_extended(soundfile, write_to):
 
 def key_estimate_multiscope(soundfile, write_to):
     """
-    Estimates the overall key of an audio track.
+    Estimates the overall key of an audio track locally and globally.
     :type soundfile: str
     :type write_to: str
     """

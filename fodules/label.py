@@ -51,3 +51,37 @@ def key_to_list(key):
     else:
         key = [name_to_class(key[0]), mode_to_num(key[1])]
     return key
+
+
+def key_to_int(key):
+    """
+    Converts a key symbol (i.e. C major) type to int
+    :type key: str
+    """
+    name2class = {'C major': 0,
+                  'C# major': 1, 'Db major': 1,
+                  'D major': 2,
+                  'D# major': 3, 'Eb major': 3,
+                  'E major': 4,
+                  'F major': 5,
+                  'F# major': 6, 'Gb major': 6,
+                  'G major': 7,
+                  'G# major': 8, 'Ab major': 8,
+                  'A major': 9,
+                  'A# major': 10, 'Bb major': 10,
+                  'B major': 11,
+
+                  'C minor': 12,
+                  'C# minor': 13, 'Db minor': 13,
+                  'D minor': 14,
+                  'D# minor': 15, 'Eb minor': 15,
+                  'E minor': 16,
+                  'F minor': 17,
+                  'F# minor': 18, 'Gb minor': 18,
+                  'G minor': 19,
+                  'G# minor': 20, 'Ab minor': 20,
+                  'A minor': 21,
+                  'A# minor': 22, 'Bb minor': 22,
+                  'B minor': 23,
+                  }
+    return name2class[key]

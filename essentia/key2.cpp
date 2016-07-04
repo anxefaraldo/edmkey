@@ -126,7 +126,7 @@ void Key2::compute() {
   Real max2Other    = -1;
   int keyIndexOther = -1;
 
-	// Real maxPeak = -1;
+ // Real maxPeak = -1;
  //  Real max2Peak = -1;
  //  int keyIndexPeak = -1;
 
@@ -255,8 +255,8 @@ void Key2::compute() {
 
 }
 
-// this function resizes and interpolates the profiles to fit the
-// pcp size...
+// this function resizes and interpolates the profiles to fit the pcp size.
+
 void Key2::resize(int pcpsize) {
   ///////////////////////////////////////////////////////////////////
   // Interpolate to get pcpsize values

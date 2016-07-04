@@ -1,7 +1,6 @@
 #!/usr/local/bin/python
 # -*- coding: UTF-8 -*-
 
-import os
 from time import clock
 from fodules.key import *
 from fodules.folder import make_unique_dir
