@@ -40,7 +40,7 @@ HPCP_NON_LINEAR         = True
 HPCP_NORMALIZE          = True
 HPCP_SHIFT              = False
 HPCP_REFERENCE_HZ       = 440
-HPCP_SIZE               = 12
+HPCP_SIZE               = 36
 HPCP_WEIGHT_WINDOW_SIZE = 1  # semitones
 HPCP_WEIGHT_TYPE        = 'cosine'   # ['none', 'cosine', 'squaredCosine']
 
