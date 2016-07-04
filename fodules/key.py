@@ -115,11 +115,11 @@ def key_estimate(soundfile, write_to):
         key.split(' ')
         key = "{0} minor".format(key[0])
     filename = soundfile[soundfile.rfind('/') + 1:soundfile.rfind('.')]
-    raw_output = "{0},{1},{2:.2f},{3},{4},".format(filename,
-                                                   key,
-                                                   confidence,
-                                                   chroma,
-                                                   str(peaks_pcs)[1:-1])
+    raw_output = "{0}, {1}, {2:.2f}, {3}, {4}, ".format(filename,
+                                                        key,
+                                                        confidence,
+                                                        chroma,
+                                                        str(peaks_pcs)[1:-1])
     textfile = open(write_to + '/' + filename + '.key', 'w')
     textfile.write(raw_output)
     textfile.close()

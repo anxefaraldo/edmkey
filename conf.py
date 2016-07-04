@@ -11,7 +11,7 @@ AUDIO_FILE_TYPES = {'.wav', '.mp3', 'flac', '.aiff', '.ogg'}
 # Faraldo
 # -------
 AVOID_EDGES         = 0  # % of duration at the beginning and end that is not analysed.
-FIRST_N_SECS        = 30  # only analyse the first N seconds of each track (o = full track)
+FIRST_N_SECS        = 0  # only analyse the first N seconds of each track (o = full track)
 SKIP_FIRST_MINUTE   = False
 SPECTRAL_WHITENING  = True
 DETUNING_CORRECTION = True

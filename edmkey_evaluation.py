@@ -15,9 +15,9 @@ parser = argparse.ArgumentParser(prog='edmkey_evaluation',
     =======================================
     This implementation relies on our own analysis format.
     We expect a single estimation file per audio track
-    with tab-separated fields. Only the first two fields
+    with comma-separated fields. Only the first two fields
     are mandatory:
-    "filename (tab) key (tab) confidence (tab) pcp (tab) max_peak_pcp (tab) ..."
+    "filename,key,confidence,pcp1,pcp2,...,pcp11,peak1,peak2,...peak11,..."
 
     Ground truth annotations are expected as single files:
     "Tonic (space) mode"
@@ -66,9 +66,9 @@ else:
             type_error = error_type(est, ann)
             results_errors.append(type_error[0])
             type_error = type_error[1]
-            output = "{0},{1},{2}".format(ann_key,
-                                          type_error,
-                                          score_mirex)
+            output = "{0}, {1}, {2}".format(ann_key,
+                                            type_error,
+                                            score_mirex)
             append_results = open(args.estimations + '/' + element, 'a')
             append_results.write(output)
             append_results.close()
