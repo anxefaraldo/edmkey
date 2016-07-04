@@ -1,10 +1,19 @@
 #!/usr/local/bin/python
 # -*- coding: UTF-8 -*-
 
+"""
+import sys
+import os
+currentFolderPath = os.path.abspath(os.path.join(__file__, os.path.pardir))
+sys.path.insert(1, os.path.join(currentFolderPath, "site-packages"))
+print sys.path
+"""
+
 from time import clock
 from fodules.key import *
 from fodules.folder import make_unique_dir
 from argparse import ArgumentParser
+
 
 clock()
 parser = ArgumentParser(description="Key Estimation Algorithm")

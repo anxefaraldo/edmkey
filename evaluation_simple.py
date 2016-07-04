@@ -5,8 +5,6 @@ import os
 import argparse
 from fodules.label import *
 from fodules.evaluate import *
-from futils.merge_files import merge_files
-from fodules.excel import matrix_to_excel
 
 parser = argparse.ArgumentParser(prog='edmkey_evaluation',
                                  formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -47,7 +45,8 @@ else:
             est_string = est_file.readline()
             # assuming that Tonic Mode separated by a Space:
             est_string = est_string.split(', ')
-            est_key = est_string[1]
+            est_key = est_string[-1]
+            print est_key
             est_confidence = est_string[2]
             est = key_to_list(est_key)
             est_file.close()
@@ -66,12 +65,6 @@ else:
             type_error = error_type(est, ann)
             results_errors.append(type_error[0])
             type_error = type_error[1]
-            output = "{0}, {1}, {2}".format(ann_key,
-                                            type_error,
-                                            score_mirex)
-            append_results = open(args.estimations + '/' + element, 'a')
-            append_results.write(output)
-            append_results.close()
             if args.verbose:
                 print "{0} - {1} as {2}, {3} = {4}".format(element,
                                                            est_key,
@@ -89,33 +82,6 @@ else:
         error_matrix[item / 2, item % 2] += 1
     # WRITE RESULTS TO FILES
     # ======================
-    write_score = open(args.estimations + '/mirex.txt', 'w')
-    write_score.write("%.3f\tcorrect\n" % mirex_results[0])
-    write_score.write("%.3f\tfifth errors\n" % mirex_results[1])
-    write_score.write("%.3f\trelative errors\n" % mirex_results[2])
-    write_score.write("%.3f\tparallel errors\n" % mirex_results[3])
-    write_score.write("%.3f\tother errors\n" % mirex_results[4])
-    write_score.write("%.3f\tweighted score\n" % mirex_results[5])
-    write_score.close()
-    matrix_to_excel(error_matrix,
-                    label_rows=('I', 'bII', 'II', 'bIII', 'III', 'IV',
-                                '#IV', 'V', 'bVI', 'VI', 'bVII', 'VII',
-                                'i', 'bii', 'ii', 'biii', 'iii', 'iv',
-                                '#iv', 'v', 'bvi', 'vi', 'bvii', 'vii'),
-                    label_cols=('I', 'i'),
-                    filename=args.estimations + '/errors.xls')
-    matrix_to_excel(keys_matrix,
-                    label_rows=('C', 'C#', 'D', 'Eb', 'E', 'F',
-                                'F#', 'G', 'G#', 'A', 'Bb', 'B',
-                                'Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm',
-                                'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm'),
-                    label_cols=('C', 'C#', 'D', 'Eb', 'E', 'F',
-                                'F#', 'G', 'G#', 'A', 'Bb', 'B',
-                                'Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm',
-                                'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm'),
-                    filename=args.estimations + '/confusion_matrix.xls')
-    merge_files(args.estimations, args.estimations + '/merged_results.csv')
-
     if args.verbose:
         print '\nCONFUSION MATRIX:'
         print keys_matrix
