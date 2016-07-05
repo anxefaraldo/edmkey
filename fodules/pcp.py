@@ -111,4 +111,4 @@ def bin_to_pc(binary, pcp_size=36):
     Returns the pitch-class of the specified pcp vector.
     It assumes (bin[0] == pc9) as implemeted in Essentia.
     """
-    return (int(binary / (pcp_size / 12.0)) + 9) % 12
+    return (binary / (pcp_size / 12.0) + 9) % 12

@@ -16,6 +16,7 @@ from argparse import ArgumentParser
 
 
 clock()
+conf_file = open('./conf.py', 'r')
 parser = ArgumentParser(description="Key Estimation Algorithm")
 parser.add_argument("input",
                     help="file or dir to analyse")
@@ -63,7 +64,7 @@ elif os.path.isdir(args.input):
     if args.xtra:
         print "You have selected extra analysis features. This might take a while."
     for item in list_all_files:
-        if any(soundfile_type in item for soundfile_type in AUDIO_FILE_TYPES):
+        if any(soundfile_type in item for soundfile_type in VALID_FILE_TYPES):
             audiofile = args.input + '/' + item
             if args.xtra:
                 estimation = key_estimate_extended(audiofile, output_dir)
@@ -76,7 +77,6 @@ elif os.path.isdir(args.input):
 else:
     raise parser.error("'{0}' is not a valid argument.".format(args.input))
 
-conf_file = open('./conf.py', 'r')
 write_conf_to = open(output_dir + '/conf.txt', 'w')
 write_conf_to.write(conf_file.read())
 write_conf_to.close()
