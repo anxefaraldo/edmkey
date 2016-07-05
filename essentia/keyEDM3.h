@@ -17,15 +17,15 @@
  * version 3 along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-#ifndef ESSENTIA_KEY2_H
-#define ESSENTIA_KEY2_H
+#ifndef ESSENTIA_KEYEDM3_H
+#define ESSENTIA_KEYEDM3_H
 
 #include "algorithm.h"
 
 namespace essentia {
 namespace standard {
 
-class Key2 : public Algorithm {
+class KeyEDM3 : public Algorithm {
 
  private:
   Input<std::vector<Real> > _pcp;
@@ -37,7 +37,7 @@ class Key2 : public Algorithm {
 
  public:
 
-  Key2() {
+  KeyEDM3() {
     declareInput(_pcp, "pcp", "the input pitch class profile");
 
     declareOutput(_key, "key", "the estimated key, from A to G");
@@ -47,7 +47,7 @@ class Key2 : public Algorithm {
   }
 
   void declareParameters() {
-    declareParameter("profileType", "the type of polyphic profile to use for correlation calculation", "{bmtg1,bmtg2,bmtg3,edma}", "bmtg2");
+    declareParameter("profileType", "the type of polyphic profile to use for correlation calculation", "{bmtg1,bmtg2,bmtg3,edma}", "bmtg3");
     declareParameter("pcpSize", "number of divisions per octave (12*i). This parameter is only a hint; During computation the size of the input PCP is used instead)", "[12,inf)", 36);
   }
 
@@ -62,31 +62,23 @@ protected:
     MAJOR   = 0,
     MINOR   = 1,
     OTHER   = 2,
-    // PEAK    = 3,
-    // FLAT    = 4
   };
 
   std::vector<Real> _M;
   std::vector<Real> _m;
   std::vector<Real> _O;
-  // std::vector<Real> _P;
-  // std::vector<Real> _F;
+
   std::vector<Real> _profile_doM;
   std::vector<Real> _profile_dom;
   std::vector<Real> _profile_doO;
-  // std::vector<Real> _profile_doP;
-  // std::vector<Real> _profile_doF;
 
   Real _mean_profile_M;
   Real _mean_profile_m;
   Real _mean_profile_O;
-  // Real _mean_profile_P;
-  // Real _mean_profile_F;
+
   Real _std_profile_M;
   Real _std_profile_m;
   Real _std_profile_O;
-  // Real _std_profile_P;
-  // Real _std_profile_F;
 
   std::string _profileType;
 
@@ -105,7 +97,7 @@ protected:
 namespace essentia {
 namespace streaming {
 
-class Key2 : public AlgorithmComposite {
+class KeyEDM3 : public AlgorithmComposite {
  protected:
   Sink<std::vector<Real> > _pcp;
 
@@ -115,20 +107,20 @@ class Key2 : public AlgorithmComposite {
 
   Pool _pool;
   Algorithm* _poolStorage;
-  standard::Algorithm* _key2Algo;
+  standard::Algorithm* _keyEDM3Algo;
 
  public:
-  Key2();
-  ~Key2();
+  KeyEDM3();
+  ~KeyEDM3();
 
   void declareParameters() {
-    declareParameter("profileType", "the type of polyphic profile to use for correlation calculation", "{bmtg1,bmtg2,bmtg3,edma}", "bmtg2");
+    declareParameter("profileType", "the type of polyphic profile to use for correlation calculation", "{bmtg1,bmtg2,bmtg3,edma}", "bmtg3");
     declareParameter("pcpSize", "number of divisions per octave (12*i). This parameter is only a hint; During computation the size of the input PCP is used instead)", "[12,inf)", 36);
   }
 
   void configure() {
-    _key2Algo->configure(INHERIT("profileType"),
-                         INHERIT("pcpSize"));
+    _keyEDM3Algo->configure(INHERIT("profileType"),
+                            INHERIT("pcpSize"));
   }
 
   void declareProcessOrder() {
@@ -147,4 +139,4 @@ class Key2 : public AlgorithmComposite {
 } // namespace streaming
 } // namespace essentia
 
-#endif // ESSENTIA_KEY2_H
+#endif // ESSENTIA_KEYEDM3_H

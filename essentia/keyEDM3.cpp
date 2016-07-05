@@ -17,7 +17,7 @@
  * version 3 along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-#include "key2.h"
+#include "keyEDM3.h"
 #include "essentiamath.h"
 
 using namespace std;
@@ -25,8 +25,8 @@ using namespace std;
 namespace essentia {
 namespace standard {
 
-const char* Key2::name = "Key2";
-const char* Key2::description = DOC("Using pitch profile classes, this algorithm calculates the best matching key estimate for a given HPCP. The algorithm was severely adapted and changed from the original implementation for readability and speed.\n"
+const char* KeyEDM3::name = "KeyEDM3";
+const char* KeyEDM3::description = DOC("Using pitch profile classes, this algorithm calculates the best matching key estimate for a given HPCP. The algorithm was severely adapted and changed from the original implementation for readability and speed.\n"
 "\n"
 "Key will throw exceptions either when the input pcp size is not a positive multiple of 12 or if the key could not be found.\n"
 
@@ -40,7 +40,7 @@ const char* Key2::description = DOC("Using pitch profile classes, this algorithm
 );
 
 
-void Key2::configure() {
+void KeyEDM3::configure() {
 
   _profileType = parameter("profileType").toString();
 
@@ -69,21 +69,21 @@ void Key2::configure() {
 
 };
 
-#define SET_PROFILE(i) _M = arrayToVector<Real>(profileTypes[3*i]); _m = arrayToVector<Real>(profileTypes[3*i+1]); _O = arrayToVector<Real>(profileTypes[3*i+2])//; _P = arrayToVector<Real>(profileTypes[5*i+3]); _F = arrayToVector<Real>(profileTypes[5*i+4])
+#define SET_PROFILE(i) _M = arrayToVector<Real>(profileTypes[3*i]); _m = arrayToVector<Real>(profileTypes[3*i+1]); _O = arrayToVector<Real>(profileTypes[3*i+2])
 
   if      (_profileType == "bmtg1") { SET_PROFILE(0); }
   else if (_profileType == "bmtg2") { SET_PROFILE(1); }
   else if (_profileType == "bmtg3") { SET_PROFILE(2); }
   else if (_profileType == "edma" ) { SET_PROFILE(3); }
   else {
-    throw EssentiaException("Key2: Unsupported profile type: ", _profileType);
+    throw EssentiaException("KeyEDM3: Unsupported profile type: ", _profileType);
   }
  
   resize(parameter("pcpSize").toInt());
 }
 
 
-void Key2::compute() {
+void KeyEDM3::compute() {
 
   const vector<Real>& pcp = _pcp.get();
 
@@ -91,7 +91,7 @@ void Key2::compute() {
   int n = pcpsize/12;
 
   if (pcpsize < 12 || pcpsize % 12 != 0)
-    throw EssentiaException("Key2: input PCP size is not a positive multiple of 12");
+    throw EssentiaException("KeyEDM3: input PCP size is not a positive multiple of 12");
 
   if (pcpsize != (int)_profile_dom.size()) {
     resize(pcpsize);
@@ -113,7 +113,7 @@ void Key2::compute() {
   Real max2    = -1;    // second maximum
   int scale    = MAJOR;  // scale
 
-  // Compute maximum for major, minor, flat, peak and other.
+  // Compute maximum for major, minor and other.
   Real maxMajor     = -1;
   Real max2Major    = -1;
   int keyIndexMajor = -1;
@@ -125,14 +125,6 @@ void Key2::compute() {
   Real maxOther     = -1;
   Real max2Other    = -1;
   int keyIndexOther = -1;
-
- // Real maxPeak = -1;
- //  Real max2Peak = -1;
- //  int keyIndexPeak = -1;
-
- //  Real maxFlat = -1;
- //  Real max2Flat = -1;
- //  int keyIndexFlat = -1;
 
 
   // calculate the correlation between the profiles and the PCP...
@@ -155,70 +147,38 @@ void Key2::compute() {
     }
 
     Real corrOther = correlation(pcp, mean_pcp, std_pcp, _profile_doO, _mean_profile_O, _std_profile_O, shift);
-    // Compute maximum value for major keys
+    // Compute maximum value for other keys
     if (corrOther > maxOther) {
       max2Other = maxOther;
       maxOther = corrOther;
       keyIndexOther = shift;
     }
-
-  //   Real corrPeak = correlation(pcp, mean_pcp, std_pcp, _profile_doP, _mean_profile_P, _std_profile_P, shift);
-  //   // Compute maximum value for major keys
-  //   if (corrPeak > maxPeak) {
-  //     max2Peak = maxPeak;
-  //     maxPeak = corrPeak;
-  //     keyIndexPeak = shift;
-  //   }
-
-		// Real corrFlat = correlation(pcp, mean_pcp, std_pcp, _profile_doF, _mean_profile_F, _std_profile_F, shift);
-  //   // Compute maximum value for major keys
-  //   if (corrFlat > maxFlat) {
-  //     max2Flat = maxFlat;
-  //     maxFlat = corrFlat;
-  //     keyIndexFlat = shift;
-  //   }
   }
 
 
-
-  if (maxMajor > maxMinor && maxMajor > maxOther) {  // && maxMajor > maxPeak && maxMajor > maxFlat
+  if (maxMajor > maxMinor && maxMajor > maxOther) {
     keyIndex = (int) (keyIndexMajor *  12 / pcpsize + 0.5);
     scale = MAJOR;
     max = maxMajor;
     max2 = max2Major;
   }
 
-  else if (maxMinor >= maxMajor && maxMinor >= maxOther) {  // && maxMinor > maxPeak && maxMinor > maxFlat
+  else if (maxMinor >= maxMajor && maxMinor >= maxOther) {
     keyIndex = (int) (keyIndexMinor * 12 / pcpsize + 0.5);
     scale = MINOR;
     max = maxMinor;
     max2 = max2Minor;
     }
 
-	else if (maxOther > maxMajor && maxOther > maxMinor) {   // && maxOther > maxPeak && maxOther > maxFlat
+	else if (maxOther > maxMajor && maxOther > maxMinor) {
     keyIndex = (int) (keyIndexOther * 12 / pcpsize + 0.5);
     scale = OTHER;
     max = maxOther;
     max2 = max2Other;
     }
   
-  // else if (maxPeak > maxMajor && maxPeak > maxMinor && maxPeak > maxOther && maxPeak > maxFlat) {
-  //   keyIndex = (int) (keyIndexPeak * 12 / pcpsize + 0.5);
-  //   scale = PEAK;
-  //   max = maxPeak;
-  //   max2 = max2Peak;
-  //   }
-
-  // else {
-  //   keyIndex = (int) (keyIndexFlat * 12 / pcpsize + 0.5);
-  //   scale = FLAT;
-  //   max = maxFlat;
-  //   max2 = max2Flat;
-  // }
-
-
   if (keyIndex < 0) {
-    throw EssentiaException("Key2: keyIndex smaller than zero. Could not find key.");
+    throw EssentiaException("KeyEDM3: keyIndex smaller than zero. Could not find key.");
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -239,25 +199,16 @@ void Key2::compute() {
     _scale.get() = "minor";
   }
 
- //  else if (scale == PEAK) {
- //    _scale.get() = "monotonic"; // monotonic
- //  }
-
-	// else {
- //    _scale.get() = "noisy-or-atonal"; // noise/atonal
-  //}
-
   _strength.get() = max;
 
   // this one outputs the relative difference between the maximum and the
   // second highest maximum (i.e. Compute second highest correlation peak)
   _firstToSecondRelativeStrength.get() = (max - max2) / max;
-
 }
 
 // this function resizes and interpolates the profiles to fit the pcp size.
 
-void Key2::resize(int pcpsize) {
+void KeyEDM3::resize(int pcpsize) {
   ///////////////////////////////////////////////////////////////////
   // Interpolate to get pcpsize values
   int n = pcpsize/12;
@@ -265,15 +216,13 @@ void Key2::resize(int pcpsize) {
   _profile_doM.resize(pcpsize);
   _profile_dom.resize(pcpsize);
   _profile_doO.resize(pcpsize);
-  // _profile_doP.resize(pcpsize);
-  // _profile_doF.resize(pcpsize);
+
 
   for (int i=0; i<12; i++) {
     _profile_doM[i*n] = _M[i];
     _profile_dom[i*n] = _m[i];
     _profile_doO[i*n] = _O[i];
-    // _profile_doP[i*n] = _P[i];
-    // _profile_doF[i*n] = _F[i];
+
 
     // Two interpolated values
     Real incr_M, incr_m, incr_O, incr_P, incr_F;
@@ -281,57 +230,47 @@ void Key2::resize(int pcpsize) {
       incr_M = (_M[11] - _M[0]) / n;
       incr_m = (_m[11] - _m[0]) / n;
       incr_O = (_O[11] - _O[0]) / n;
-      // incr_P = (_O[11] - _P[0]) / n;
-      // incr_F = (_O[11] - _F[0]) / n;
     }
+    
     else {
       incr_M = (_M[i] - _M[i+1]) / n;
       incr_m = (_m[i] - _m[i+1]) / n;
       incr_O = (_O[i] - _O[i+1]) / n;
-      // incr_P = (_P[i] - _P[i+1]) / n;
-      // incr_F = (_F[i] - _F[i+1]) / n;
     }
 
     for (int j=1; j<=(n-1); j++) {
       _profile_doM[i*n+j] = _M[i] - j * incr_M;
       _profile_dom[i*n+j] = _m[i] - j * incr_m;
-      _profile_doO[i*n+j] = _O[i] - j * incr_O;
-     	// _profile_doP[i*n+j] = _P[i] - j * incr_P;
-      // _profile_doF[i*n+j] = _F[i] - j * incr_F;			
+      _profile_doO[i*n+j] = _O[i] - j * incr_O;	
     }
   }
 
   _mean_profile_M = mean(_profile_doM);
   _mean_profile_m = mean(_profile_dom);
   _mean_profile_O = mean(_profile_doO);
-  // _mean_profile_P = mean(_profile_doP);
-  // _mean_profile_F = mean(_profile_doF);
+
   _std_profile_M = 0;
   _std_profile_m = 0;
   _std_profile_O = 0;
-  // _std_profile_P = 0;
-  // _std_profile_F = 0;
+
 
   // Compute Standard Deviations
   for (int i=0; i<pcpsize; i++) {
     _std_profile_M += (_profile_doM[i] - _mean_profile_M) * (_profile_doM[i] - _mean_profile_M);
     _std_profile_m += (_profile_dom[i] - _mean_profile_m) * (_profile_dom[i] - _mean_profile_m);
     _std_profile_O += (_profile_doO[i] - _mean_profile_O) * (_profile_doO[i] - _mean_profile_O);
-    // _std_profile_P += (_profile_doP[i] - _mean_profile_P) * (_profile_doP[i] - _mean_profile_P);
-    // _std_profile_F += (_profile_doF[i] - _mean_profile_F) * (_profile_doF[i] - _mean_profile_F);
-  }
+}
+
   _std_profile_M = sqrt(_std_profile_M);
   _std_profile_m = sqrt(_std_profile_m);
   _std_profile_O = sqrt(_std_profile_O);
-  //_std_profile_P = sqrt(_std_profile_P);
-  //_std_profile_F = sqrt(_std_profile_F);
 }
 
 
 // correlation coefficient with 'shift'
 // one of the vectors is shifted in time, and then the correlation is calculated,
 // just like a cross-correlation
-Real Key2::correlation(const vector<Real>& v1, const Real mean1, const Real std1, const vector<Real>& v2, const Real mean2, const Real std2, const int shift) const
+Real KeyEDM3::correlation(const vector<Real>& v1, const Real mean1, const Real std1, const vector<Real>& v2, const Real mean2, const Real std2, const int shift) const
 {
   Real r = 0.0;
   int size = (int)v1.size();
@@ -362,12 +301,12 @@ Real Key2::correlation(const vector<Real>& v1, const Real mean1, const Real std1
 namespace essentia {
 namespace streaming {
 
-const char* Key2::name = standard::Key2::name;
-const char* Key2::description = standard::Key2::description;
+const char* KeyEDM3::name = standard::KeyEDM3::name;
+const char* KeyEDM3::description = standard::KeyEDM3::description;
 
-Key2::Key2() : AlgorithmComposite() {
+KeyEDM3::KeyEDM3() : AlgorithmComposite() {
 
-  _key2Algo = standard::AlgorithmFactory::create("Key2");
+  _keyEDM3Algo = standard::AlgorithmFactory::create("KeyEDM3");
   _poolStorage = new PoolStorage<std::vector<Real> >(&_pool, "internal.hpcp");
 
   declareInput(_poolStorage->input("data"), 1, "pcp", "the input pitch class profile");
@@ -377,13 +316,13 @@ Key2::Key2() : AlgorithmComposite() {
   declareOutput(_strength, 0, "strength", "the strength of the estimated key");
 }
 
-Key2::~Key2() {
-  delete _key2Algo;
+KeyEDM3::~KeyEDM3() {
+  delete _keyEDM3Algo;
   delete _poolStorage;
 }
 
 
-AlgorithmStatus Key2::process() {
+AlgorithmStatus KeyEDM3::process() {
   if (!shouldStop()) return PASS;
 
   const vector<vector<Real> >& hpcpKey = _pool.value<vector<vector<Real> > >("internal.hpcp");
@@ -392,13 +331,13 @@ AlgorithmStatus Key2::process() {
   string scale;
   Real strength;
   Real firstToSecondRelativeStrength;
-  _key2Algo->configure("profileType", "bmtg2");
-  _key2Algo->input("pcp").set(hpcpAverage);
-  _key2Algo->output("key").set(key);
-  _key2Algo->output("scale").set(scale);
-  _key2Algo->output("strength").set(strength);
-  _key2Algo->output("firstToSecondRelativeStrength").set(firstToSecondRelativeStrength);
-  _key2Algo->compute();
+  _keyEDM3Algo->configure("profileType", "bmtg2");
+  _keyEDM3Algo->input("pcp").set(hpcpAverage);
+  _keyEDM3Algo->output("key").set(key);
+  _keyEDM3Algo->output("scale").set(scale);
+  _keyEDM3Algo->output("strength").set(strength);
+  _keyEDM3Algo->output("firstToSecondRelativeStrength").set(firstToSecondRelativeStrength);
+  _keyEDM3Algo->compute();
 
   _key.push(key);
   _scale.push(scale);
@@ -408,9 +347,9 @@ AlgorithmStatus Key2::process() {
 }
 
 
-void Key2::reset() {
+void KeyEDM3::reset() {
   AlgorithmComposite::reset();
-  _key2Algo->reset();
+  _keyEDM3Algo->reset();
 }
 
 } // namespace streaming

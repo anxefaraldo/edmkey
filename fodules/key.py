@@ -40,7 +40,7 @@ def estimate_key(soundfile, write_to):
                      windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
                      maxShifted=HPCP_SHIFT)
     if USE_THREE_PROFILES:
-        key_1 = estd.Key2(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
+        key_1 = estd.KeyEDM3(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
     else:
         key_1 = estd.KeyEDM(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
     if WITH_MODAL_DETAILS:
@@ -130,32 +130,30 @@ def estimate_key(soundfile, write_to):
     if WITH_MODAL_DETAILS:
         key_verbose = key_1 + ' ' + key_2
         key = key_verbose.split(' ')
-        #  NOW WE APPLY SOME SIMPLE RULES BASED ON THE MULTIPLE ESTIMATIONS TO IMPROVE THE RESULTS:
+        # SIMPLE RULES BASED ON THE MULTIPLE ESTIMATIONS TO IMPROVE THE RESULTS:
         # 1)
         if key[3] == 'monotonic' and key[0] == key[2]:
             key = '{0} minor'.format(key[0])
         # 2)
         # 3)
-        # or else take the simple estimation as true:
-        elif key[1] == 'minor2':
-            key = "{0} minor".format(key[0])
+        # else we take the simple estimation as true:
         else:
             key = "{0} {1}".format(key[0], key[1])
-        raw_output = "{0}, {1}, {2:.2f}, {3:.2f}, {4}, {5}, {6}, {7}, ".format(filename,
+        raw_output = "{0}, {1}, {2}, {3}, {4:.2f}, {5:.2f}, {6}, {7}, ".format(filename,
                                                                                key,
-                                                                               confidence_1,
-                                                                               confidence_2,
                                                                                chroma,
                                                                                str(peaks_pcs)[1:-1],
+                                                                               confidence_1,
+                                                                               confidence_2,
                                                                                key_1,
                                                                                key_2)
     else:
         key = key_1
-        raw_output = "{0}, {1}, {2:.2f}, {3}, {4}, ".format(filename,
+        raw_output = "{0}, {1}, {2}, {3}, {4:.2f}, ".format(filename,
                                                             key,
-                                                            confidence_1,
                                                             chroma,
-                                                            str(peaks_pcs)[1:-1])
+                                                            str(peaks_pcs)[1:-1],
+                                                            confidence_1)
     textfile = open(write_to + '/' + filename + '.key', 'w')
     textfile.write(raw_output)
     textfile.close()

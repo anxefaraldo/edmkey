@@ -149,7 +149,6 @@ void KeyExtended::compute() {
   // we shift the profile around to find the best match
   for (int shift=0; shift<pcpsize; shift++) {
     Real corrMaj1 = correlation(pcp, mean_pcp, std_pcp, _profile_doM1, _mean_profile_M1, _std_profile_M1, shift);
-        // Compute maximum value for Maj1 keys...
     if (corrMaj1 > maxMaj1) {
       max2Maj1 = maxMaj1;
       maxMaj1 = corrMaj1;
@@ -278,11 +277,11 @@ void KeyExtended::compute() {
     }
 
   else if (maxPeak > maxMaj1 && maxPeak > maxMin1 && maxPeak > maxMaj2 && maxPeak > maxMin2 && maxPeak > maxMaj3 && maxPeak > maxMin3 && maxPeak > maxMaj4 && maxPeak > maxMin4 && maxPeak > maxFlat) {
-  keyIndex = (int) (keyIndexPeak * 12 / pcpsize + 0.5);
-  scale = PEAK;
-  max = maxPeak;
-  max2 = max2Peak;
-  }
+    keyIndex = (int) (keyIndexPeak * 12 / pcpsize + 0.5);
+    scale = PEAK;
+    max = maxPeak;
+    max2 = max2Peak;
+    }
 
   else {
     keyIndex = (int) (keyIndexFlat * 12 / pcpsize + 0.5);
@@ -350,7 +349,6 @@ void KeyExtended::compute() {
   // this one outputs the relative difference between the maximum and the
   // second highest maximum (i.e. Compute second highest correlation peak)
   _firstToSecondRelativeStrength.get() = (max - max2) / max;
-
 }
 
 

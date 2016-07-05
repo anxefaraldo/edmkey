@@ -72,14 +72,6 @@ void KeyEDM::configure() {
     { 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000 } 
 //    I       bII     II      bIII    III     IV      #IV     V       bVI     VI      bVII    VII
 
-/* 
-
-from correct major and minor:
-
-    { 1.0000, 0.1452, 0.4338, 0.1394, 0.6107, 0.3772, 0.1576, 0.7818, 0.1346, 0.4560, 0.1553, 0.3055 }, 
-    { 1.0000, 0.2243, 0.3214, 0.3497, 0.2815, 0.3271, 0.1804, 0.7451, 0.2491, 0.1862, 0.3670, 0.2012 },
-*/    
-
 };
 
 #define SET_PROFILE(i) _M = arrayToVector<Real>(profileTypes[2*i]); _m = arrayToVector<Real>(profileTypes[2*i+1])
@@ -126,7 +118,7 @@ void KeyEDM::compute() {
   int keyIndex = -1; // index of the first maximum
   Real max = -1;     // first maximum
   Real max2 = -1;    // second maximum
-  int scale = MAJOR;  // scale
+  int scale = MAJOR; // scale
 
   // Compute maximum for both major and minor
   Real maxMaj = -1;
@@ -170,15 +162,12 @@ void KeyEDM::compute() {
     max2 = max2Min;
   }
 
-  // keyIndex = (int)(keyIndex * 12.0 / pcpsize + 0.5) % 12;
-
   if (keyIndex < 0) {
     throw EssentiaException("KeyEDM: keyIndex smaller than zero. Could not find key.");
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // Here we calculate the outputs...
-
   // first three outputs are key, scale and strength
   _key.get() = _keys[keyIndex];
   _scale.get() = scale == MAJOR ? "major" : "minor";
@@ -235,7 +224,6 @@ void KeyEDM::resize(int pcpsize) {
   _std_profile_M = sqrt(_std_profile_M);
   _std_profile_m = sqrt(_std_profile_m);
 }
-
 
 // correlation coefficient with 'shift'
 // on of the vectors is shifted in time, and then the correlation is calculated,
