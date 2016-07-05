@@ -1,5 +1,6 @@
 from conf import *
 from fodules.pcp import *
+from fodules.label import *
 from collections import Counter
 import essentia.standard as estd
 
@@ -108,10 +109,15 @@ def estimate_key(soundfile, write_to):
             peaks_pcs.append(bin_to_pc(item, HPCP_SIZE))
         estimation_1 = key_1(chroma)
         key_1 = estimation_1[0] + ' ' + estimation_1[1]
+        keyn_1 = key_to_int(key_1)
+        tonic_1 = name_to_class(estimation_1[0])
+        scale_1 = mode_to_num(estimation_1[1])
         confidence_1 = estimation_1[2]
         if WITH_MODAL_DETAILS:
             estimation_2 = key_2(chroma)
             key_2 = estimation_2[0] + ' ' + estimation_2[1]
+            tonic_2 = name_to_class(estimation_2[0])
+            scale_2 = mode_to_num(estimation_2[1])
             confidence_2 = estimation_2[2]
         chroma = str(chroma)[1:-1]
     elif ANALYSIS_TYPE == 'local':
@@ -139,21 +145,32 @@ def estimate_key(soundfile, write_to):
         # else we take the simple estimation as true:
         else:
             key = "{0} {1}".format(key[0], key[1])
-        raw_output = "{0}, {1}, {2}, {3}, {4:.2f}, {5:.2f}, {6}, {7}, ".format(filename,
-                                                                               key,
-                                                                               chroma,
-                                                                               str(peaks_pcs)[1:-1],
-                                                                               confidence_1,
-                                                                               confidence_2,
-                                                                               key_1,
-                                                                               key_2)
+            # keyn_2 = key_to_int(key)
+        raw_output = "{0}, {1}, {2}, {3}, {4:.2f}, {5:.2f}, {6}, {7}, {8}, {9}, {10}, {11}".format(
+                filename,  # todo arreglar el formato de esto
+                key,
+                chroma,
+                str(peaks_pcs)[1:-1],
+                keyn_1,
+                tonic_1,
+                scale_1,
+                confidence_1,
+                # keyn_2,
+                tonic_2,
+                scale_2,
+                confidence_2,
+                key_1,
+                key_2)
     else:
         key = key_1
-        raw_output = "{0}, {1}, {2}, {3}, {4:.2f}, ".format(filename,
-                                                            key,
-                                                            chroma,
-                                                            str(peaks_pcs)[1:-1],
-                                                            confidence_1)
+        raw_output = "{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7:.2f}, ".format(filename,
+                                                                           key,
+                                                                           chroma,
+                                                                           str(peaks_pcs)[1:-1],
+                                                                           keyn_1,
+                                                                           tonic_1,
+                                                                           scale_1,
+                                                                           confidence_1)
     textfile = open(write_to + '/' + filename + '.key', 'w')
     textfile.write(raw_output)
     textfile.close()

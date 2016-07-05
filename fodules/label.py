@@ -28,13 +28,17 @@ def mode_to_num(mode):
     Converts a scale type into numeric values (maj = 0, min = 1).
     :type mode: str
     """
-    mode2num = {''       : 0,
-                'major'  : 0,
-                'minor'  : 1,
-                'other'  : 2,
-                'peak'   : 3,
-                'flat'   : 4,
-                'silence': 5}
+    mode2num = {'major': 0,
+                'minor': 1,
+                'ionian': 2,
+                'harmonic': 3,
+                'mixolydian': 4,
+                'phrygian': 5,
+                'fifth': 6,
+                'monotonic': 7,
+                'difficult': 8,
+                'peak': 9,
+                'flat': 10}
     return mode2num[mode]
 
 
@@ -92,7 +96,7 @@ def int_to_key(a_number):
     Converts an int onto a key symbol with root and scale.
     :type a_number: int
     """
-    name2class = {0:  'C major',
+    int2key    = {0:  'C major',
                   1:  'C# major',
                   2:  'D major',
                   3:  'Eb major',
@@ -118,4 +122,4 @@ def int_to_key(a_number):
                   22: 'Bb minor',
                   23: 'B minor',
                   }
-    return name2class[a_number]
+    return int2key[a_number]

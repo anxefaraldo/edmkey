@@ -30,12 +30,14 @@ else:
     for element in estimation_files:
         if element[-4:] == ".key":
             est_file = open(args.estimations + '/' + element, 'r')
-            est_string = est_file.readline()
             # assuming that Tonic Mode separated by a Space:
+            est_string = est_file.readline()
+            print est_string
             est_string = est_string.split(', ')
-            est_key = est_string[-1]
+            print est_string
+            est_key = est_string[-2]
             print est_key
-            est_confidence = est_string[2]
+            # est_confidence = est_string[2]
             est = key_to_list(est_key)
             est_file.close()
             try:
