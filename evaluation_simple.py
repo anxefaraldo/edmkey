@@ -2,24 +2,12 @@
 # -*- coding: UTF-8 -*-
 
 import os
-import argparse
 from fodules.label import *
 from fodules.evaluate import *
+from argparse import ArgumentParser
 
-parser = argparse.ArgumentParser(prog='edmkey_evaluation',
-                                 formatter_class=argparse.RawDescriptionHelpFormatter,
-                                 description='''
-    Automatic Evaluation of Key Estimations
-    =======================================
-    This implementation relies on our own analysis format.
-    We expect a single estimation file per audio track
-    with comma-separated fields. Only the first two fields
-    are mandatory:
-    "filename,key,confidence,pcp1,pcp2,...,pcp11,peak1,peak2,...peak11,..."
 
-    Ground truth annotations are expected as single files:
-    "Tonic (space) mode"
-    ''')
+parser = ArgumentParser(description="Simple evaliation Algorithm")
 parser.add_argument("annotations",
                     help="dir with ground truth key annotations.")
 parser.add_argument("estimations",

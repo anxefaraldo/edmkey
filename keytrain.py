@@ -15,6 +15,19 @@ targets = stringcell_from_csv(training_file, 78)    # col. 75 holds the ground-t
 filenames = stringcell_from_csv(training_file, 0)   # col. 0 stores the filename.
 print len(features), 'files used for training.'
 
+"""
+# Split data in train and test datasets
+np.random.seed(0)  # A random permutation, to split the data randomly.
+indices = np.random.permutation(len(features))
+
+features_train = features[indices[:-10]]
+targets_train = targets[indices[:-10]]
+filenames_train = filenames[indices[:-10]]
+features_test = features[indices[-10:]]
+targets_test = targets[indices[-10:]]
+filenames_test = filenames[indices[-10:]]
+"""
+
 # here is the actual support vector machine.
 svc = svm.SVC()
 svc.fit(features, targets)

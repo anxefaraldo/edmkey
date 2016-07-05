@@ -8,7 +8,7 @@ from fodules.evaluate import *
 from futils.merge_files import merge_files
 from fodules.excel import matrix_to_excel
 
-parser = argparse.ArgumentParser(prog='edmkey_evaluation',
+parser = argparse.ArgumentParser(prog='evaluation_detail',
                                  formatter_class=argparse.RawDescriptionHelpFormatter,
                                  description='''
     Automatic Evaluation of Key Estimations
@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(prog='edmkey_evaluation',
     We expect a single estimation file per audio track
     with comma-separated fields. Only the first two fields
     are mandatory:
-    "filename,key,confidence,pcp1,pcp2,...,pcp11,peak1,peak2,...peak11,..."
+    "filename, key, confidence, pcp1, pcp2, ..., pcpn, pk1, pk2, ..., peakn, ..."
 
     Ground truth annotations are expected as single files:
     "Tonic (space) mode"
@@ -54,7 +54,7 @@ else:
             try:
                 ann_file = open(args.annotations + '/' + element, 'r')
                 ann_key = ann_file.readline()
-                # TODO: prevent annotation as tab/space separated!
+                # TODO: allow annotations separated by tab or space!
                 ann = key_to_list(ann_key)
                 ann_file.close()
             except StandardError:
