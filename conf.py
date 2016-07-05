@@ -42,4 +42,4 @@ N_WINDOWS                    = 100       # if ANALYSIS_TYPE == 'local'
 WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE == 'local'
 KEY_PROFILE                  = 'bmtg3'   # ['edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3']
 USE_THREE_PROFILES           = False
-WITH_MODAL_DETAILS           = True
+WITH_MODAL_DETAILS           = False

@@ -45,7 +45,7 @@ if os.path.isfile(args.input):
     output_dir = make_unique_dir(output_dir, tag=analysis_file)
     print "Writing results to '{0}'.".format(output_dir)
     print 'Analysing {0}'.format(analysis_file),
-    estimation = key_estimate_extended(args.input, output_dir)
+    estimation = estimate_key(args.input, output_dir)
     if args.verbose:
         print ": {0}".format(estimation),
     print "({0} s.)".format(clock())
@@ -59,7 +59,7 @@ elif os.path.isdir(args.input):
     for item in list_all_files:
         if any(soundfile_type in item for soundfile_type in VALID_FILE_TYPES):
             audiofile = args.input + '/' + item
-            estimation = key_estimate_extended(audiofile, output_dir)
+            estimation = estimate_key(audiofile, output_dir)
             if args.verbose:
                 print "{0} - {1}".format(audiofile, estimation)
             count_files += 1
