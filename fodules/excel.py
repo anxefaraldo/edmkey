@@ -67,3 +67,13 @@ def stringcell_from_csv(csv_file, col=27):
         saved_values.append(row[col])
     return nparray(saved_values)
 
+
+def keycell_from_csv(csv_file, col=27):
+    saved_values = []
+    csv_file = open(csv_file, 'r')
+    csv_file = csv.reader(csv_file, skipinitialspace=True)
+    for row in csv_file:
+        saved_values.append(key_to_int(row[col]))
+    return nparray(saved_values)
+
+

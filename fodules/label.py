@@ -85,3 +85,37 @@ def key_to_int(key):
                   'B minor': 23,
                   }
     return name2class[key]
+
+
+def int_to_key(a_number):
+    """
+    Converts an int onto a key symbol with root and scale.
+    :type a_number: int
+    """
+    name2class = {0:  'C major',
+                  1:  'C# major',
+                  2:  'D major',
+                  3:  'Eb major',
+                  4:  'E major',
+                  5:  'F major',
+                  6:  'F# major',
+                  7:  'G major',
+                  8:  'Ab major',
+                  9:  'A major',
+                  10: 'Bb major',
+                  11: 'B major',
+
+                  12: 'C minor',
+                  13: 'C# minor',
+                  14: 'D minor',
+                  15: 'Eb minor',
+                  16: 'E minor',
+                  17: 'F minor',
+                  18: 'F# minor',
+                  19: 'G minor',
+                  20: 'Ab minor',
+                  21: 'A minor',
+                  22: 'Bb minor',
+                  23: 'B minor',
+                  }
+    return name2class[a_number]

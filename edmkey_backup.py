@@ -16,6 +16,8 @@ from argparse import ArgumentParser
 
 clock()
 conf_file = open('./conf.py', 'r')
+
+
 parser = ArgumentParser(description="Key Estimation Algorithm")
 parser.add_argument("input",
                     help="file or dir to analyse")

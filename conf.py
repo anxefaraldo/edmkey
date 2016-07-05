@@ -13,9 +13,9 @@ HIGHPASS_CUTOFF              = 200
 SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # ['average', 'frame']
-PCP_THRESHOLD                = 0.66       # it should work fine with the bmtg3 profile.
+PCP_THRESHOLD                = 0
 WINDOW_SIZE                  = 4096
-HOP_SIZE                     = 1 * WINDOW_SIZE
+HOP_SIZE                     = 4096
 WINDOW_SHAPE                 = 'hann'
 MIN_HZ                       = 25
 MAX_HZ                       = 3500
@@ -28,7 +28,7 @@ HPCP_NON_LINEAR              = True
 HPCP_NORMALIZE               = True
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
-HPCP_SIZE                    = 36
+HPCP_SIZE                    = 12
 HPCP_WEIGHT_WINDOW_SEMITONES = 1         # semitones
 HPCP_WEIGHT_TYPE             = 'cosine'  # ['none', 'cosine', 'squaredCosine']
 
@@ -41,5 +41,5 @@ ANALYSIS_TYPE                = 'global'  # ['local', 'global']
 N_WINDOWS                    = 100       # if ANALYSIS_TYPE == 'local'
 WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE == 'local'
 KEY_PROFILE                  = 'bmtg3'   # ['edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3']
-USE_THREE_PROFILES           = True
+USE_THREE_PROFILES           = False
 WITH_MODAL_DETAILS           = True

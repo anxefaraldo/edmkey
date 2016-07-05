@@ -66,9 +66,9 @@ else:
             type_error = error_type(est, ann)
             results_errors.append(type_error[0])
             type_error = type_error[1]
-            output = "{0}, {1}, {2}".format(ann_key,
-                                            type_error,
-                                            score_mirex)
+            output = "{0}, {1}, {2}, ".format(ann_key,
+                                              type_error,
+                                              score_mirex)
             append_results = open(args.estimations + '/' + element, 'a')
             append_results.write(output)
             append_results.close()
