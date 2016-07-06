@@ -1,4 +1,4 @@
-### edmkey (version for MIREX 16)
+## edmkey (version for MIREX 16)
 
 Algorithm for automatic key detection in EDM.
 
@@ -19,7 +19,7 @@ However, if you just prefer to use the latest essentia-master, you can copy the 
 
 Detailed instructions to build essentia can be found on the essentia site:
 
-http://essentia.upf.edu/documentation/installing.html
+*http://essentia.upf.edu/documentation/installing.html*
 
 
 ### Compiling as executable
