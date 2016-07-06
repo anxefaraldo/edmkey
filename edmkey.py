@@ -1,12 +1,6 @@
 #!/usr/local/bin/python
 #  -*- coding: UTF-8 -*-
 
-"""
-currentFolderPath = os.path.abspath(os.path.join(__file__, os.path.pardir))
-sys.path.insert(1, os.path.join(currentFolderPath, "site-packages"))
-"""
-
-
 import os
 import sys
 import numpy as np
@@ -57,7 +51,7 @@ N_WINDOWS                    = 100       # if ANALYSIS_TYPE is 'local'
 WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE is 'local'
 KEY_PROFILE                  = 'bmtg3'   # {'edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3'}
 USE_THREE_PROFILES           = True
-WITH_MODAL_DETAILS           = False
+WITH_MODAL_DETAILS           = True
 
 
 # ===================== #
@@ -77,31 +71,6 @@ def results_directory(out_dir):
         else:
             os.mkdir(out_dir)
     return out_dir
-
-
-def normalize_pcp_area(pcp):
-    """
-    Normalizes a pcp so that the sum of its content is 1,
-    outputting a pcp with up to 3 decimal points.
-    """
-    pcp = np.divide(pcp, np.sum(pcp))
-    new_format = []
-    for item in pcp.tolist():
-        new_format.append(round(item, 3))
-    return new_format
-
-
-def normalize_pcp_peak(pcp):
-    """
-    Normalizes a pcp so that the maximum value is 1,
-    outputting a pcp with up to 3 decimal points.
-    """
-    pcp = np.multiply(pcp, (1 / np.max(pcp)))
-    new_format = []
-    for item in pcp:
-        new_format.append(round(item, 3))
-    print new_format
-    return new_format
 
 
 def shift_pcp(pcp, pcp_size=12):
@@ -125,37 +94,6 @@ def shift_pcp(pcp, pcp_size=12):
     return pcp
 
 
-def transpose_pcp(pcp, tonic, pcp_size=36):
-    """
-    Takes an incoming pcp (assuming its first position
-    corresponds to the note A and transposes it down so that
-    the tonic note corresponds to the first place in the vector.
-    """
-    transposed = np.roll(pcp, (pcp_size / 12.0) * ((tonic - 9) % 12) * -1)
-    return transposed
-
-
-def extract_median_pcp(dir_estimations, dir_annotations, pcp_size=36):
-    """
-    Extracts the mean profile from a list of vectors.
-    """
-    list_estimations = os.listdir(dir_estimations)
-    accumulate_profiles = []
-    for item in list_estimations:
-        if '.key' in item:
-            root = open(dir_annotations + '/' + item, 'r')
-            root = root.readline()
-            root, mode = root[:root.find(' ')], root[root.find(' ') + 1:]
-            pcp = open(dir_estimations + '/' + item, 'r')
-            pcp = pcp.readline()
-            pcp = pcp[pcp.rfind('\t') + 1:].split(', ')
-            for i in range(pcp_size):
-                pcp[i] = float(pcp[i])
-            pcp = transpose_pcp(pcp, name_to_class(root))
-            accumulate_profiles.append(pcp)
-    return np.median(accumulate_profiles, axis=0)
-
-
 def pcp_gate(pcp, threshold):
     """
     Zeroes vector elements with values under a certain threshold.
@@ -164,27 +102,6 @@ def pcp_gate(pcp, threshold):
         if pcp[i] < threshold:
             pcp[i] = 0
     return pcp
-
-
-def pcp_sort(pcp):
-    """
-    Returns a new vector with sorted indexes of the incoming pcp vector.
-    """
-    pcp = pcp[:]
-    idx = []
-    for i in range(len(pcp)):
-        new_index = pcp.index(np.max(pcp))
-        idx.append(new_index)
-        pcp[new_index] = -1
-    return idx
-
-
-def bin_to_pc(binary, pcp_size=36):
-    """
-    Returns the pitch-class of the specified pcp vector.
-    It assumes (bin[0] == pc9) as implemeted in Essentia.
-    """
-    return int((binary / (pcp_size / 12.0)) + 9) % 12
 
 
 def name_to_class(key):
@@ -240,72 +157,6 @@ def key_to_list(key):
     else:
         key = [name_to_class(key[0]), mode_to_num(key[1])]
     return key
-
-
-def key_to_int(key):
-    """
-    Converts a key symbol (i.e. C major) type to int
-    :type key: str
-    """
-    name2class = {'C major': 0,
-                  'C# major': 1, 'Db major': 1,
-                  'D major': 2,
-                  'D# major': 3, 'Eb major': 3,
-                  'E major': 4,
-                  'F major': 5,
-                  'F# major': 6, 'Gb major': 6,
-                  'G major': 7,
-                  'G# major': 8, 'Ab major': 8,
-                  'A major': 9,
-                  'A# major': 10, 'Bb major': 10,
-                  'B major': 11,
-                  'C minor': 12,
-                  'C# minor': 13, 'Db minor': 13,
-                  'D minor': 14,
-                  'D# minor': 15, 'Eb minor': 15,
-                  'E minor': 16,
-                  'F minor': 17,
-                  'F# minor': 18, 'Gb minor': 18,
-                  'G minor': 19,
-                  'G# minor': 20, 'Ab minor': 20,
-                  'A minor': 21,
-                  'A# minor': 22, 'Bb minor': 22,
-                  'B minor': 23,
-                  }
-    return name2class[key]
-
-
-def int_to_key(a_number):
-    """
-    Converts an int onto a key symbol with root and scale.
-    :type a_number: int
-    """
-    int2key    = {0:  'C major',
-                  1:  'C# major',
-                  2:  'D major',
-                  3:  'Eb major',
-                  4:  'E major',
-                  5:  'F major',
-                  6:  'F# major',
-                  7:  'G major',
-                  8:  'Ab major',
-                  9:  'A major',
-                  10: 'Bb major',
-                  11: 'B major',
-                  12: 'C minor',
-                  13: 'C# minor',
-                  14: 'D minor',
-                  15: 'Eb minor',
-                  16: 'E minor',
-                  17: 'F minor',
-                  18: 'F# minor',
-                  19: 'G minor',
-                  20: 'Ab minor',
-                  21: 'A minor',
-                  22: 'Bb minor',
-                  23: 'B minor',
-                  }
-    return int2key[a_number]
 
 
 def estimate_key(input_audio_file, output_text_file):
@@ -406,10 +257,6 @@ def estimate_key(input_audio_file, output_text_file):
         if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
             chroma = shift_pcp(list(chroma), HPCP_SIZE)
         chroma = chroma.tolist()
-        ordered_peaks = pcp_sort(chroma)
-        peaks_pcs = []
-        for item in ordered_peaks:
-            peaks_pcs.append(bin_to_pc(item, HPCP_SIZE))
         estimation_1 = key_1(chroma)
         key_1 = estimation_1[0] + '\t' + estimation_1[1]
         if WITH_MODAL_DETAILS:
@@ -423,17 +270,12 @@ def estimate_key(input_audio_file, output_text_file):
             key_2 = mode_2.most_common(1)[0][0]
     else:
         raise NameError("ANALYSIS_TYPE must be set to either 'local' or 'global'")
-    filename = input_audio_file[input_audio_file.rfind('/') + 1:input_audio_file.rfind('.')]
     if WITH_MODAL_DETAILS:
         key_verbose = key_1 + '\t' + key_2
         key = key_verbose.split('\t')
         # SIMPLE RULES BASED ON THE MULTIPLE ESTIMATIONS TO IMPROVE THE RESULTS:
-        # 1)
         if key[3] == 'monotonic' and key[0] == key[2]:
             key = '{0} minor'.format(key[0])
-        # 2)
-        # 3)
-        # else we take the simple estimation as true:
         else:
             key = "{0}\t{1}".format(key[0], key[1])
     else:
@@ -466,6 +308,7 @@ if __name__ == "__main__":
     if not args.batch_mode:
         if not os.path.isfile(args.input):
             print "ERROR: Could not find '{0}'".format(args.input)
+            print "Are you sure is it a valid filename?"
             sys.exit()
         elif os.path.isfile(args.input):
             print "\nAnalysing:\t{0}".format(args.input)
