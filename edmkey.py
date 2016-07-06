@@ -1,19 +1,22 @@
 #!/usr/local/bin/python
-# -*- coding: UTF-8 -*-
+#  -*- coding: UTF-8 -*-
 
 import os
 import sys
+
+currentFolderPath = os.path.abspath(os.path.join(__file__, os.path.pardir))
+sys.path.insert(1, os.path.join(currentFolderPath, "site-packages"))
+
+
 import numpy as np
 import essentia.standard as estd
 from collections import Counter
 
-"""
-import sys
-import os
-currentFolderPath = os.path.abspath(os.path.join(__file__, os.path.pardir))
-sys.path.insert(1, os.path.join(currentFolderPath, "site-packages"))
-print sys.path
-"""
+
+
+print estd.__file__
+print np.__file__
+
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #
@@ -52,7 +55,7 @@ HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 # Scope and Key Detector Method
 # -----------------------------
 AVOID_TIME_EDGES             = 0         # percentage of track-length not analysed on the edges.
-FIRST_N_SECS                 = 30        # analyse first n seconds of each track (0 = full track)
+FIRST_N_SECS                 = 0        # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
 ANALYSIS_TYPE                = 'global'  # {'local', 'global'}
 N_WINDOWS                    = 100       # if ANALYSIS_TYPE is 'local'
