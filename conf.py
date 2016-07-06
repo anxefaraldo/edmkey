@@ -32,8 +32,8 @@ HPCP_SIZE                    = 36
 HPCP_WEIGHT_WINDOW_SEMITONES = 1         # semitones
 HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 
-# Key Detector
-# ------------
+# Scope and Key Detector Method
+# -----------------------------
 AVOID_TIME_EDGES             = 0         # percentage of track-length not analysed on the edges.
 FIRST_N_SECS                 = 30        # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
@@ -42,4 +42,4 @@ N_WINDOWS                    = 100       # if ANALYSIS_TYPE is 'local'
 WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE is 'local'
 KEY_PROFILE                  = 'bmtg3'   # {'edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3'}
 USE_THREE_PROFILES           = True
-WITH_MODAL_DETAILS           = True
+WITH_MODAL_DETAILS           = False
