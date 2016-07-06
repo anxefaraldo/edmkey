@@ -30,13 +30,11 @@ You can get pyinstaller via pip:
 
 $ pip install pyinstaller
 
-and then generate the executable with the following command:
-
-$ cd edmkey
+and then, in the edmkey folder, generate the executable with the following command:
 
 $ pyinstaller edmkey.py
 
-The new edmkey ecutable will be located in './dist/edmkey'
+The new edmkey executable will be located in './dist/edmkey'
 
 
 ### Extras
