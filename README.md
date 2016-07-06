@@ -33,6 +33,7 @@ $ pip install pyinstaller
 and then generate the executable with the following command:
 
 $ cd edmkey
+
 $ pyinstaller edmkey.py
 
 The new edmkey ecutable will be located in './dist/edmkey'
