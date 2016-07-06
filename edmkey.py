@@ -7,16 +7,9 @@ import sys
 currentFolderPath = os.path.abspath(os.path.join(__file__, os.path.pardir))
 sys.path.insert(1, os.path.join(currentFolderPath, "site-packages"))
 
-
 import numpy as np
 import essentia.standard as estd
 from collections import Counter
-
-
-
-print estd.__file__
-print np.__file__
-
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #
