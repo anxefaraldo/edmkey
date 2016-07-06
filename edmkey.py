@@ -2,10 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import sys
 import numpy as np
 import essentia.standard as estd
 from collections import Counter
-from datetime import datetime
 
 """
 import sys
@@ -66,24 +66,19 @@ WITH_MODAL_DETAILS           = False
 # FUNCTION DECLARATIONS #
 # ===================== #
 
-def make_unique_dir(parent, tag=''):
+def results_directory(out_dir):
     """
     creates a sub-folder in the specified directory
     with some of the algorithm parameters.
-    :type parent: str
-    :type tag: str
+    :type out_dir: str
     """
-    now = str(datetime.now())
-    now = now[:now.rfind('.')]
-    now = now.replace(':', '')
-    now = now.replace(' ', '')
-    now = now.replace('-', '')
-    temp_folder = "{0}/{1}-{2}".format(parent, now, tag)
-    try:
-        os.mkdir(temp_folder)
-    except OSError:
-        print "'{}' already exists.".format(temp_folder)
-    return temp_folder
+    if not os.path.isdir(out_dir):
+        print "CREATING DIRECTORY '{0}'.".format(out_dir)
+        if not os.path.isabs(out_dir):
+            raise IOError("Not a valid path name.")
+        else:
+            os.mkdir(out_dir)
+    return out_dir
 
 
 def normalize_pcp_area(pcp):
@@ -315,14 +310,14 @@ def int_to_key(a_number):
     return int2key[a_number]
 
 
-def estimate_key(soundfile, write_to):
+def estimate_key(input_audio_file, output_text_file):
     """
     This function estimates the overall key of an audio track
     optionaly with extra modal information.
-    :type soundfile: str
-    :type write_to: str
+    :type input_audio_file: str
+    :type output_text_file: str
     """
-    loader = estd.MonoLoader(filename=soundfile,
+    loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=SAMPLE_RATE)
     hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF,
                         sampleRate=SAMPLE_RATE)
@@ -393,16 +388,16 @@ def estimate_key(soundfile, write_to):
             raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
         if ANALYSIS_TYPE == 'local':
             if len(chroma) == N_WINDOWS:
-                pcp = np.sum(chroma, axis=0)  # TODO: have a look at variance or std!
+                pcp = np.sum(chroma, axis=0)
                 if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
                     pcp = shift_pcp(list(pcp), HPCP_SIZE)
                 pcp = pcp.tolist()
                 local_key_1 = key_1(pcp)
-                local_result_1 = local_key_1[0] + ' ' + local_key_1[1]
+                local_result_1 = local_key_1[0] + '\t' + local_key_1[1]
                 keys_1.append(local_result_1)
                 if WITH_MODAL_DETAILS:
                     local_key_2 = key_2(pcp)
-                    local_result_2 = local_key_2[0] + ' ' + local_key_2[1]
+                    local_result_2 = local_key_2[0] + '\t' + local_key_2[1]
                     keys_2.append(local_result_2)
                 chroma = chroma[WINDOW_INCREMENT:]
         frame_start += WINDOW_SIZE
@@ -418,34 +413,22 @@ def estimate_key(soundfile, write_to):
         for item in ordered_peaks:
             peaks_pcs.append(bin_to_pc(item, HPCP_SIZE))
         estimation_1 = key_1(chroma)
-        key_1 = estimation_1[0] + ' ' + estimation_1[1]
-        keyn_1 = key_to_int(key_1)
-        tonic_1 = name_to_class(estimation_1[0])
-        scale_1 = mode_to_num(estimation_1[1])
-        confidence_1 = estimation_1[2]
+        key_1 = estimation_1[0] + '\t' + estimation_1[1]
         if WITH_MODAL_DETAILS:
             estimation_2 = key_2(chroma)
-            key_2 = estimation_2[0] + ' ' + estimation_2[1]
-            tonic_2 = name_to_class(estimation_2[0])
-            scale_2 = mode_to_num(estimation_2[1])
-            confidence_2 = estimation_2[2]
-        chroma = str(chroma)[1:-1]
+            key_2 = estimation_2[0] + '\t' + estimation_2[1]
     elif ANALYSIS_TYPE == 'local':
         mode_1 = Counter(keys_1)
         key_1 = mode_1.most_common(1)[0][0]
-        confidence_1 = 0.0
-        peaks_pcs = ['N/A']
-        chroma = ['N/A']
         if WITH_MODAL_DETAILS:
             mode_2 = Counter(keys_2)
             key_2 = mode_2.most_common(1)[0][0]
-            confidence_2 = 0.0
     else:
         raise NameError("ANALYSIS_TYPE must be set to either 'local' or 'global'")
-    filename = soundfile[soundfile.rfind('/') + 1:soundfile.rfind('.')]
+    filename = input_audio_file[input_audio_file.rfind('/') + 1:input_audio_file.rfind('.')]
     if WITH_MODAL_DETAILS:
-        key_verbose = key_1 + ' ' + key_2
-        key = key_verbose.split(' ')
+        key_verbose = key_1 + '\t' + key_2
+        key = key_verbose.split('\t')
         # SIMPLE RULES BASED ON THE MULTIPLE ESTIMATIONS TO IMPROVE THE RESULTS:
         # 1)
         if key[3] == 'monotonic' and key[0] == key[2]:
@@ -454,35 +437,11 @@ def estimate_key(soundfile, write_to):
         # 3)
         # else we take the simple estimation as true:
         else:
-            key = "{0} {1}".format(key[0], key[1])
-            # keyn_2 = key_to_int(key)
-        raw_output = "{0}, {1}, {2}, {3}, {4:.2f}, {5:.2f}, {6}, {7}, {8}, {9}, {10}, {11}".format(
-                filename,  # todo arreglar el formato de esto
-                key,
-                chroma,
-                str(peaks_pcs)[1:-1],
-                keyn_1,
-                tonic_1,
-                scale_1,
-                confidence_1,
-                # keyn_2,
-                tonic_2,
-                scale_2,
-                confidence_2,
-                key_1,
-                key_2)
+            key = "{0}\t{1}".format(key[0], key[1])
     else:
         key = key_1
-        output = "{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7:.2f}, ".format(filename,
-                                                                           key,
-                                                                           chroma,
-                                                                           str(peaks_pcs)[1:-1],
-                                                                           keyn_1,
-                                                                           tonic_1,
-                                                                           scale_1,
-                                                                           confidence_1)
-    textfile = open(write_to + '/' + filename + '.key', 'w')
-    textfile.write(raw_output)
+    textfile = open(output_text_file, 'w')
+    textfile.write(key + '\n')
     textfile.close()
     return key
 
@@ -493,57 +452,54 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
 
     clock()
-    conf_file = open('./conf.py', 'r')
     parser = ArgumentParser(description="Key Estimation Algorithm")
     parser.add_argument("input",
-                        help="file or dir to analyse")
+                        help="file (dir if in --batch_mode) to analyse")
+    parser.add_argument("output",
+                        help="file (dir if in --batch_mode) to write results to")
+    parser.add_argument("-b", "--batch_mode",
+                        action="store_true",
+                        help="batch analyse a whole directory")
     parser.add_argument("-v", "--verbose",
                         action="store_true",
-                        help="print estimations to console")
-    parser.add_argument("-w", "--write_to",
-                        help="specify dir to export results")
-    parser.add_argument("-c", "--conf_file",
-                        help="specify a different configuration file")
+                        help="print progress to console")
     args = parser.parse_args()
 
-    if args.write_to:
-        if not os.path.isdir(args.write_to):
-            raise parser.error("'{0}' is not a valid directory for writing.".format(args.input))
+    if not args.batch_mode:
+        if not os.path.isfile(args.input):
+            print "ERROR: Could not find '{0}'".format(args.input)
+            sys.exit()
+        elif os.path.isfile(args.input):
+            print "Analysing:\t{0}".format(args.input)
+            print "Exporting to:\t{0}.".format(args.output)
+            estimation = estimate_key(args.input, args.output)
+            if args.verbose:
+                print ":\t{0}".format(estimation),
         else:
-            output_dir = args.write_to
-    elif os.path.isfile(args.input):
-        output_dir = args.input[:args.input.rfind('/')]
-    elif os.path.isdir(args.input):
-        output_dir = args.input
-
-    if os.path.isfile(args.input):
-        analysis_file = args.input[1 + args.input.rfind('/'):]
-        output_dir = make_unique_dir(output_dir, tag=analysis_file)
-        print "Writing results to '{0}'.".format(output_dir)
-        print 'Analysing {0}'.format(analysis_file),
-        estimation = estimate_key(args.input, output_dir)
-        if args.verbose:
-            print ": {0}".format(estimation),
-        print "({0} s.)".format(clock())
-
-    elif os.path.isdir(args.input):
-        analysis_folder = args.input[1 + args.input.rfind('/'):]
-        output_dir = make_unique_dir(output_dir, tag=analysis_folder)
-        list_all_files = os.listdir(args.input)
-        print 'Analysing files...'
-        count_files = 0
-        for item in list_all_files:
-            if any(soundfile_type in item for soundfile_type in VALID_FILE_TYPES):
-                audiofile = args.input + '/' + item
-                estimation = estimate_key(audiofile, output_dir)
-                if args.verbose:
-                    print "{0} - {1}".format(audiofile, estimation)
-                count_files += 1
-        print "{0} audio files analysed in {1} secs.".format(count_files, clock())
+            raise IOError("Unknown Error in single file mode")
     else:
-        raise parser.error("'{0}' is not a valid argument.".format(args.input))
-
-    write_conf_to = open(output_dir + '/conf.txt', 'w')
-    write_conf_to.write(conf_file.read())
-    write_conf_to.close()
-    conf_file.close()
+        if os.path.isdir(args.input):
+            analysis_folder = args.input[1 + args.input.rfind('/'):]
+            if os.path.isfile(args.output):
+                print "\nWARNING:"
+                print "It seems that you are trying to write onto an existing file."
+                print "In batch_mode, the output argument must be a directory.".format(args.output)
+                print "Type 'edmkey.py -h' for help.\n"
+                sys.exit()
+            output_dir = results_directory(args.output)
+            list_all_files = os.listdir(args.input)
+            print "\nAnalysing audio files in:\t''{0}'.".format(args.input)
+            print "Writing estimation files to:\t'{0}''.".format(args.output)
+            count_files = 0
+            for a_file in list_all_files:
+                if any(soundfile_type in a_file for soundfile_type in VALID_FILE_TYPES):
+                    input_file = args.input + '/' + a_file
+                    output_file = args.output + '/' + a_file[:-4] + '.txt'
+                    estimation = estimate_key(input_file, output_file)
+                    if args.verbose:
+                        print "{0} - {1}".format(input_file, estimation)
+                    count_files += 1
+            print "{0} audio files analysed in {1} secs.".format(count_files, clock())
+        else:
+            raise IOError("Unknown error in batch mode")
+    print "Finished in:\t{0} s.".format(clock())
