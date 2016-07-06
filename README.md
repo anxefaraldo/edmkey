@@ -1,4 +1,4 @@
-# edmkey -- MIREX2016 version
+### edmkey (version for MIREX 16)
 
 Algorithm for automatic key detection in EDM.
 
