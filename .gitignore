@@ -3,3 +3,6 @@
 .DS_Store
 *.pyc
 .idea
+build
+dist
+*.spec
