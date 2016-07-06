@@ -470,7 +470,7 @@ if __name__ == "__main__":
             print "ERROR: Could not find '{0}'".format(args.input)
             sys.exit()
         elif os.path.isfile(args.input):
-            print "Analysing:\t{0}".format(args.input)
+            print "\nAnalysing:\t{0}".format(args.input)
             print "Exporting to:\t{0}.".format(args.output)
             estimation = estimate_key(args.input, args.output)
             if args.verbose:
@@ -499,7 +499,7 @@ if __name__ == "__main__":
                     if args.verbose:
                         print "{0} - {1}".format(input_file, estimation)
                     count_files += 1
-            print "{0} audio files analysed in {1} secs.".format(count_files, clock())
+            print "{0} audio files analysed.".format(count_files, clock())
         else:
             raise IOError("Unknown error in batch mode")
     print "Finished in:\t{0} s.".format(clock())
