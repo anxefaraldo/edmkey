@@ -26,8 +26,7 @@ These are built statically and are provided within the zip, so you should
 not worry about installing or compiling additional sources, as well as 
 about messing with other uncompatible versions. 
 
-We have tested the executable on a fresh install of Ubuntu 14.10 
-(i386 and x86_64) so it should work in any subsequent versions of Ubuntu.
+We have tested the executable on a fresh install of Ubuntu 16.10 (x86_64)
 Should you experience any problems running the algorithm, please do not 
 hesitate to contact us.
    
