@@ -10,12 +10,6 @@ In order to run or compile the algorithm you need.
 - Numpy >= 
 - Essentia (http://essentia.upf.edu/)
 
-We are actually using our own fork of essentia, which you can find here:
-
-*https://github.com/angelfaraldo/essentia*
-
-However, if you just prefer to use the latest essentia-master, you can copy the files in the "essentia" folder in this repository onto "/essentia/src/algorithms/tonal" and then build and compile. They are exclusive algorithms and will not overwrite any of the default ones.
-
 Detailed instructions to build essentia can be found on the essentia site:
 
 *http://essentia.upf.edu/documentation/installing.html*

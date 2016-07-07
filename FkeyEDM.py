@@ -5,7 +5,6 @@ import os
 import sys
 import numpy as np
 import essentia.standard as estd
-from collections import Counter
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #
@@ -18,13 +17,11 @@ VALID_FILE_TYPES             = {'.wav', '.mp3', 'flac', '.aiff', '.ogg'}
 
 # Analysis Parameters
 # -------------------
-HIGHPASS_CUTOFF              = 200
 SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
-PCP_THRESHOLD                = 0.66
 WINDOW_SIZE                  = 4096
-HOP_SIZE                     = 4096
+HOP_SIZE                     = 4 * WINDOW_SIZE
 WINDOW_SHAPE                 = 'hann'
 MIN_HZ                       = 25
 MAX_HZ                       = 3500
@@ -46,12 +43,7 @@ HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 AVOID_TIME_EDGES             = 0         # percentage of track-length not analysed on the edges.
 FIRST_N_SECS                 = 0        # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
-ANALYSIS_TYPE                = 'global'  # {'local', 'global'}
-N_WINDOWS                    = 100       # if ANALYSIS_TYPE is 'local'
-WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE is 'local'
-KEY_PROFILE                  = 'bmtg3'   # {'edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3'}
-USE_THREE_PROFILES           = True
-WITH_MODAL_DETAILS           = True
+KEY_PROFILE                  = 'edma'
 
 
 # ===================== #
@@ -94,16 +86,6 @@ def shift_pcp(pcp, pcp_size=12):
     return pcp
 
 
-def pcp_gate(pcp, threshold):
-    """
-    Zeroes vector elements with values under a certain threshold.
-    """
-    for i in range(len(pcp)):
-        if pcp[i] < threshold:
-            pcp[i] = 0
-    return pcp
-
-
 def estimate_key(input_audio_file, output_text_file):
     """
     This function estimates the overall key of an audio track
@@ -113,8 +95,6 @@ def estimate_key(input_audio_file, output_text_file):
     """
     loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=SAMPLE_RATE)
-    hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF,
-                        sampleRate=SAMPLE_RATE)
     window = estd.Windowing(size=WINDOW_SIZE,
                             type=WINDOW_SHAPE,
                             zeroPhase=False)
@@ -139,18 +119,11 @@ def estimate_key(input_audio_file, output_text_file):
                      weightType=HPCP_WEIGHT_TYPE,
                      windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
                      maxShifted=HPCP_SHIFT)
-    if USE_THREE_PROFILES:
-        key_1 = estd.KeyEDM3(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
-    else:
-        key_1 = estd.KeyEDM(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
-    if WITH_MODAL_DETAILS:
-        key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
-        keys_2 = []
-    audio = hpf(hpf(hpf(loader())))
+    key = estd.Key(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
+    audio = loader()
     duration = len(audio)
     frame_start = 0
     chroma = []
-    keys_1 = []
     if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
         audio = audio[SAMPLE_RATE * 60:]
         duration = len(audio)
@@ -172,7 +145,6 @@ def estimate_key(input_audio_file, output_text_file):
         if SPECTRAL_WHITENING:
             p2 = sw(spek, p1, p2)
         pcp = hpcp(p1, p2)
-        pcp = pcp_gate(pcp, PCP_THRESHOLD)
         if not DETUNING_CORRECTION or DETUNING_CORRECTION_SCOPE == 'average':
             chroma.append(pcp)
         elif DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'frame':
@@ -180,51 +152,15 @@ def estimate_key(input_audio_file, output_text_file):
             chroma.append(pcp)
         else:
             raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
-        if ANALYSIS_TYPE == 'local':
-            if len(chroma) == N_WINDOWS:
-                pcp = np.sum(chroma, axis=0)
-                if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
-                    pcp = shift_pcp(list(pcp), HPCP_SIZE)
-                pcp = pcp.tolist()
-                local_key_1 = key_1(pcp)
-                local_result_1 = local_key_1[0] + '\t' + local_key_1[1]
-                keys_1.append(local_result_1)
-                if WITH_MODAL_DETAILS:
-                    local_key_2 = key_2(pcp)
-                    local_result_2 = local_key_2[0] + '\t' + local_key_2[1]
-                    keys_2.append(local_result_2)
-                chroma = chroma[WINDOW_INCREMENT:]
         frame_start += WINDOW_SIZE
     if not chroma:
         return 'Silence'
-    if ANALYSIS_TYPE == 'global':
-        chroma = np.sum(chroma, axis=0)
-        if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
-            chroma = shift_pcp(list(chroma), HPCP_SIZE)
-        chroma = chroma.tolist()
-        estimation_1 = key_1(chroma)
-        key_1 = estimation_1[0] + '\t' + estimation_1[1]
-        if WITH_MODAL_DETAILS:
-            estimation_2 = key_2(chroma)
-            key_2 = estimation_2[0] + '\t' + estimation_2[1]
-    elif ANALYSIS_TYPE == 'local':
-        mode_1 = Counter(keys_1)
-        key_1 = mode_1.most_common(1)[0][0]
-        if WITH_MODAL_DETAILS:
-            mode_2 = Counter(keys_2)
-            key_2 = mode_2.most_common(1)[0][0]
-    else:
-        raise NameError("ANALYSIS_TYPE must be set to either 'local' or 'global'")
-    if WITH_MODAL_DETAILS:
-        key_verbose = key_1 + '\t' + key_2
-        key = key_verbose.split('\t')
-        # SIMPLE RULES BASED ON THE MULTIPLE ESTIMATIONS TO IMPROVE THE RESULTS:
-        if key[3] == 'monotonic' and key[0] == key[2]:
-            key = '{0}\tminor'.format(key[0])
-        else:
-            key = "{0}\t{1}".format(key[0], key[1])
-    else:
-        key = key_1
+    chroma = np.sum(chroma, axis=0)
+    if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
+        chroma = shift_pcp(list(chroma), HPCP_SIZE)
+    chroma = chroma.tolist()
+    estimation_1 = key(chroma)
+    key = estimation_1[0] + '\t' + estimation_1[1]
     textfile = open(output_text_file, 'w')
     textfile.write(key + '\n')
     textfile.close()
