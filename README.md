@@ -1,4 +1,4 @@
-## EDMKEY (MIREX 16 submission)
+## Fkey3 (MIREX 16 submission)
 
 Algorithm for automatic key detection in EDM.
 
@@ -26,11 +26,11 @@ The script can be compiled onto an executable using pyinstaller. You can install
 
 $ pip install pyinstaller
 
-and then, in the edmkey folder, generate the executable with the following command:
+and then, in the Fkey3 folder, generate the executable with the following command:
 
-$ pyinstaller edmkey.py
+$ pyinstaller Fkey3.py
 
-The new edmkey executable will be located in './dist/edmkey'
+The new Fkey3 executable will be located in './dist/Fkey3'
 
 
 ### Extras
