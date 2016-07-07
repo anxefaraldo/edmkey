@@ -4,8 +4,8 @@
 
 Algorithm name: edmkey
     
-Authors:        Ángel Faraldo, Emilia Gómez, Sergi Jordà, 
-                Martin Hermant, Perfecto Herrera. 
+Authors:        Ángel Faraldo, Emilia Gómez, 
+                Sergi Jordà, Perfecto Herrera. 
 
 Submitted by:   Ángel Faraldo, PhD Student
                 Music Technology Group, 
