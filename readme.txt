@@ -21,10 +21,10 @@ PACKAGE DESCRIPTION
 ===================
 
 We provide a zip folder containing this readme file, an executable file
-and a folder containing all the libraries and dependencies. These are
-built statically and are provided within the zip, so you should not worry
-about installing or compiling additional sources, as well as messing with
-other uncompatible versions. 
+and a subfolder 'dist' containing all the libraries and dependencies. 
+These are built statically and are provided within the zip, so you should
+not worry about installing or compiling additional sources, as well as 
+about messing with other uncompatible versions. 
 
 We have tested the executable on a fresh install of Ubuntu 14.04 (i386)
 and Ubuntu 16.04 (x86_64). Should you experience any problems running
