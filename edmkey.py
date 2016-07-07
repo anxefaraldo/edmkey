@@ -5,7 +5,6 @@ import os
 import sys
 import numpy as np
 import essentia.standard as estd
-from dictionaries import *
 from collections import Counter
 
 # ======================= #
