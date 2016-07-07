@@ -271,7 +271,7 @@ if __name__ == "__main__":
                 print "\nWARNING:"
                 print "It seems that you are trying to write onto an existing file"
                 print "In batch_mode, the output argument must be a directory".format(args.output)
-                print "Type 'edmkey -h' for help\n"
+                print "Type 'FkeyEDM -h' for help\n"
                 sys.exit()
             output_dir = results_directory(args.output)
             list_all_files = os.listdir(args.input)
