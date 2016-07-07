@@ -5,6 +5,7 @@ import os
 import sys
 import numpy as np
 import essentia.standard as estd
+from dictionaries import *
 from collections import Counter
 
 # ======================= #
@@ -102,61 +103,6 @@ def pcp_gate(pcp, threshold):
         if pcp[i] < threshold:
             pcp[i] = 0
     return pcp
-
-
-def name_to_class(key):
-    """
-    Converts a note name to its pitch-class value.
-    :type key: str
-    """
-    name2class = {'B#': 0, 'C': 0,
-                  'C#': 1, 'Db': 1,
-                  'D': 2,
-                  'D#': 3, 'Eb': 3,
-                  'E': 4, 'Fb': 4,
-                  'E#': 5, 'F': 5,
-                  'F#': 6, 'Gb': 6,
-                  'G': 7,
-                  'G#': 8, 'Ab': 8,
-                  'A': 9, 'A#': 10,
-                  'Bb': 10, 'B': 11,
-                  'Cb': 11,
-                  'none': 12, '-': 12}
-    return name2class[key]
-
-
-def mode_to_num(mode):
-    """
-    Converts a scale type into numeric values (maj = 0, min = 1).
-    :type mode: str
-    """
-    mode2num = {'major': 0,
-                'minor': 1,
-                'ionian': 2,
-                'harmonic': 3,
-                'mixolydian': 4,
-                'phrygian': 5,
-                'fifth': 6,
-                'monotonic': 7,
-                'difficult': 8,
-                'peak': 9,
-                'flat': 10}
-    return mode2num[mode]
-
-
-def key_to_list(key):
-    """
-    Converts a key (i.e. C major) type into a
-    numeric list in the form [tonic, mode].
-    :type key: str
-    """
-    key = key.split(' ')
-    key[-1] = key[-1].strip()
-    if len(key) == 1:
-        key = [name_to_class(key[0]), 0]
-    else:
-        key = [name_to_class(key[0]), mode_to_num(key[1])]
-    return key
 
 
 def estimate_key(input_audio_file, output_text_file):
@@ -275,7 +221,7 @@ def estimate_key(input_audio_file, output_text_file):
         key = key_verbose.split('\t')
         # SIMPLE RULES BASED ON THE MULTIPLE ESTIMATIONS TO IMPROVE THE RESULTS:
         if key[3] == 'monotonic' and key[0] == key[2]:
-            key = '{0} minor'.format(key[0])
+            key = '{0}\tminor'.format(key[0])
         else:
             key = "{0}\t{1}".format(key[0], key[1])
     else:
@@ -307,8 +253,9 @@ if __name__ == "__main__":
 
     if not args.batch_mode:
         if not os.path.isfile(args.input):
-            print "ERROR: Could not find '{0}'".format(args.input)
-            print "Are you sure is it a valid filename?"
+            print "\nWARNING:"
+            print "Could not find {0}".format(args.input)
+            print "Are you sure is it a valid filename?\n"
             sys.exit()
         elif os.path.isfile(args.input):
             print "\nAnalysing:\t{0}".format(args.input)
@@ -317,20 +264,20 @@ if __name__ == "__main__":
             if args.verbose:
                 print ":\t{0}".format(estimation),
         else:
-            raise IOError("Unknown Error in single file mode")
+            raise IOError("Unknown ERROR in single file mode")
     else:
         if os.path.isdir(args.input):
             analysis_folder = args.input[1 + args.input.rfind('/'):]
             if os.path.isfile(args.output):
                 print "\nWARNING:"
-                print "It seems that you are trying to write onto an existing file."
-                print "In batch_mode, the output argument must be a directory.".format(args.output)
-                print "Type 'edmkey.py -h' for help.\n"
+                print "It seems that you are trying to write onto an existing file"
+                print "In batch_mode, the output argument must be a directory".format(args.output)
+                print "Type 'edmkey -h' for help\n"
                 sys.exit()
             output_dir = results_directory(args.output)
             list_all_files = os.listdir(args.input)
-            print "\nAnalysing audio files in:\t''{0}'.".format(args.input)
-            print "Writing estimation files to:\t'{0}''.".format(args.output)
+            print "\nAnalysing audio files in:\t{0}".format(args.input)
+            print "Writing estimation files to:\t{0}\n".format(args.output)
             count_files = 0
             for a_file in list_all_files:
                 if any(soundfile_type in a_file for soundfile_type in VALID_FILE_TYPES):
@@ -340,7 +287,7 @@ if __name__ == "__main__":
                     if args.verbose:
                         print "{0} - {1}".format(input_file, estimation)
                     count_files += 1
-            print "{0} audio files analysed.".format(count_files, clock())
+            print "{0} audio files analysed".format(count_files, clock())
         else:
-            raise IOError("Unknown error in batch mode")
-    print "Finished in:\t{0} s.".format(clock())
+            raise IOError("Unknown ERROR in batch mode")
+    print "Finished in:\t{0} secs.\n".format(clock())

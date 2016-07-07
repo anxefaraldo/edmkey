@@ -2,7 +2,9 @@
 # -*- coding: UTF-8 -*-
 
 import os
-import numpy as np
+from numpy import divide as npdivide
+from numpy import mean as npmean
+from dictionaries import *
 
 
 def mirex_score(estimation, truth):
@@ -57,55 +59,9 @@ def mirex_evaluation(list_with_weighted_results):
                 results[3] += 1.0
             elif f == 0:
                 results[4] += 1.0
-        results = list(np.divide(results, size))
-        results.append(np.mean(list_with_weighted_results))
+        results = list(npdivide(results, size))
+        results.append(npmean(list_with_weighted_results))
         return results
-
-
-def name_to_class(key):
-    """
-    Converts a note name to its pitch-class value.
-    :type key: str
-    """
-    name2class = {'B#': 0, 'C': 0,
-                  'C#': 1, 'Db': 1,
-                  'D': 2,
-                  'D#': 3, 'Eb': 3,
-                  'E': 4, 'Fb': 4,
-                  'E#': 5, 'F': 5,
-                  'F#': 6, 'Gb': 6,
-                  'G': 7,
-                  'G#': 8, 'Ab': 8,
-                  'A': 9, 'A#': 10,
-                  'Bb': 10, 'B': 11,
-                  'Cb': 11,
-                  'none': 12, '-': 12}
-    return name2class[key]
-
-
-def mode_to_num(mode):
-    """
-    Converts a scale type into numeric values (maj = 0, min = 1).
-    :type mode: str
-    """
-    mode2num = {'major': 0,
-                'minor': 1}
-    return mode2num[mode]
-
-
-def key_to_list(key):
-    """
-    Converts a key (i.e. C major) type into a
-    numeric list in the form [tonic, mode].
-    :type key: str
-    """
-    key = key.split('\t')
-    key[-1] = key[-1].strip()
-    if len(key) == 1:
-        key = [name_to_class(key[0]), 0]
-    else:
-        key = [name_to_class(key[0]), mode_to_num(key[1])]
-    return key
 
 
 if __name__ == "__main__":
