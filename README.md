@@ -1,4 +1,4 @@
-## edmkey (version for MIREX 16)
+## EDMKEY (MIREX 16 submission)
 
 Algorithm for automatic key detection in EDM.
 
@@ -10,7 +10,6 @@ In order to run or compile the algorithm you need.
 - Numpy >= 
 - Essentia (http://essentia.upf.edu/)
 
-
 We are actually using our own fork of essentia, which you can find here:
 
 *https://github.com/angelfaraldo/essentia*
@@ -21,12 +20,9 @@ Detailed instructions to build essentia can be found on the essentia site:
 
 *http://essentia.upf.edu/documentation/installing.html*
 
-
 ### Compiling as executable
 
-The script can be compiled onto an executable using pyinstaller.
-
-You can get pyinstaller via pip:
+The script can be compiled onto an executable using pyinstaller. You can install it via pip,
 
 $ pip install pyinstaller
 
