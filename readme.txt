@@ -4,8 +4,7 @@
 
 Algorithm name: fkey
     
-Authors:        Ángel Faraldo, Emilia Gómez, 
-                Sergi Jordà, Perfecto Herrera. 
+Authors:        Ángel Faraldo, Sergi Jordà, Perfecto Herrera.
 
 Submitted by:   Ángel Faraldo, PhD Student
                 Music Technology Group, 
