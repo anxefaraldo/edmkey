@@ -2,7 +2,7 @@
   MIREX SUBMISSION 2016 *** KEY ESTIMATION TASK 
 =================================================
 
-Algorithm name: Fkey3
+Algorithm name: fkey-edm
     
 Authors:        Ángel Faraldo, Sergi Jordà, Perfecto Herrera. 
 
@@ -33,31 +33,31 @@ hesitate to contact us.
 STEPS PRIOR TO RUNNING THE ALGORITHM:
 ====================================
 
-1) If you do not have the file "Fkey3.zip", you can download it 
-   from <http://www.github.com/angelfaraldo/edmkey/tree/Fkey3>
+1) If you do not have the file "fkey-edm.zip", you can download it 
+   from <http://www.github.com/angelfaraldo/edmkey/tree/fkey-edm>
 
 2) Once you have the zip file, you can move it to a convenient
    location and extract its contents.
    
-3) Last, access the Fkey3 directory.
+3) Last, access the fkey-edm directory.
 
 
-    $ mv '/home/user/Downloads/Fkey3.zip' '/home/user/Fkey3.zip'
+    $ mv '/home/user/Downloads/fkey-edm.zip' '/home/user/fkey-edm.zip'
     $ cd ~
-    $ unzip Fkey3.zip
-    $ cd Fkey3
+    $ unzip fkey-edm.zip
+    $ cd fkey-edm
 
 
 RUNNING THE ALGORITHM:
 =====================
 
 For a regular, file by file analysis, as advised in the MIREX 2016 Wiki, 
-once in the Fkey3 folder, you should type the following line (where 
+once in the fkey-edm folder, you should type the following line (where 
 %input is the full path to an audio file and %output is the full path of a
 textfile that will be created with the key estimation):
 
 
-    $ ./Fkey3 %input %output
+    $ ./fkey-edm %input %output
 
 
 However, if you have all your audio files on a single directory, you can call
@@ -67,26 +67,26 @@ on the specified output subfolder. If the output directory does not exist,
 it will create one:
 
 
-    $ ./Fkey3 -b %input_dir %output_dir
+    $ ./fkey-edm -b %input_dir %output_dir
 
 
 If you want to see the progress of the analysis on the command line,
 you can call the algorithm with the --verbose [-v] flag:
 
 
-    $ ./Fkey3 -v -b %input_dir %output_dir
+    $ ./fkey-edm -v -b %input_dir %output_dir
     
     or
     
-    $ ./Fkey3 -v %input %output
+    $ ./fkey-edm -v %input %output
  
 
 At any moment, you can obtain some help on the command line with the --help flag:
 
 
-    $ ./Fkey3 -h 
+    $ ./fkey-edm -h 
 
-    usage: Fkey3.py [-h] [-b] [-v] input output
+    usage: fkey-edm.py [-h] [-b] [-v] input output
 
     Key Estimation Algorithm
 
