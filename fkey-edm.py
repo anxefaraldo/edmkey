@@ -44,7 +44,7 @@ HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 # Scope and Key Detector Method
 # -----------------------------
 AVOID_TIME_EDGES             = 0          # percentage of track-length not analysed on the edges.
-FIRST_N_SECS                 = 30         # analyse first n seconds of each track (0 = full track)
+FIRST_N_SECS                 = 0         # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
 ANALYSIS_TYPE                = 'global'   # {'local', 'global'}
 N_WINDOWS                    = 100        # if ANALYSIS_TYPE is 'local'
