@@ -7,7 +7,7 @@ Algorithm for automatic key detection in EDM.
 In order to run or compile the algorithm you need.
 
 - Python >= 2.6
-- Numpy >= 
+- Numpy  >= 
 - Essentia (http://essentia.upf.edu/)
 
 Detailed instructions to build essentia can be found on the essentia site:
@@ -26,7 +26,7 @@ $ pyinstaller fkey.py
 
 The new fkey executable will be located in './dist/fkey'
 
-
 ### Extras
 
 Additionally, we provide a simple python script to evaluate the results of the algorithm according to the MIREX competition.
+

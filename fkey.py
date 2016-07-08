@@ -21,34 +21,38 @@ SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
 WINDOW_SIZE                  = 4096
-HOP_SIZE                     = 4 * WINDOW_SIZE
+HOP_SIZE                     = WINDOW_SIZE
 WINDOW_SHAPE                 = 'hann'
 MIN_HZ                       = 25
 MAX_HZ                       = 3500
 SPECTRAL_PEAKS_THRESHOLD     = 0.0001
 SPECTRAL_PEAKS_MAX           = 60
 HPCP_BAND_PRESET             = False
-HPCP_SPLIT_HZ                = 250       # if HPCP_BAND_PRESET is True
+HPCP_SPLIT_HZ                = 250  # if HPCP_BAND_PRESET is True
 HPCP_HARMONICS               = 4
 HPCP_NON_LINEAR              = True
 HPCP_NORMALIZE               = True
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
 HPCP_SIZE                    = 36
-HPCP_WEIGHT_WINDOW_SEMITONES = 1         # semitones
+HPCP_WEIGHT_WINDOW_SEMITONES = 1  # semitones
 HPCP_WEIGHT_TYPE             = 'squaredCosine'  # {'none', 'cosine', 'squaredCosine'}
 
 # Scope and Key Detector Method
 # -----------------------------
-AVOID_TIME_EDGES             = 0         # % of track-length not analysed on the edges.
-FIRST_N_SECS                 = 0        # analyse first n seconds of each track (0 = full track)
+AVOID_TIME_EDGES             = 0  # % of track-length not analysed on the edges.
+FIRST_N_SECS                 = 30  # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
 KEY_PROFILE                  = 'temperley'
-
+KEY_USE_THREE_CHORDS         = False
+KEY_USE_POLYPHONY            = False
+KEY_N_HARMONICS              = 15  # if use_polyphony is True
+KEY_SLOPE                    = 0.2  # if use_polyphony is True
 
 # ===================== #
 # FUNCTION DECLARATIONS #
 # ===================== #
+
 
 def results_directory(out_dir):
     """
@@ -95,6 +99,8 @@ def estimate_key(input_audio_file, output_text_file):
     """
     loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=SAMPLE_RATE)
+    cut = estd.FrameCutter(frameSize=WINDOW_SIZE,
+                           hopSize=HOP_SIZE)
     window = estd.Windowing(size=WINDOW_SIZE,
                             type=WINDOW_SHAPE)
     rfft = estd.Spectrum(size=WINDOW_SIZE)
@@ -118,10 +124,14 @@ def estimate_key(input_audio_file, output_text_file):
                      weightType=HPCP_WEIGHT_TYPE,
                      windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
                      maxShifted=HPCP_SHIFT)
-    key = estd.Key(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
+    key = estd.Key(pcpSize=HPCP_SIZE,
+                   profileType=KEY_PROFILE,
+                   numHarmonics=KEY_N_HARMONICS,
+                   slope=KEY_SLOPE,
+                   usePolyphony=KEY_USE_POLYPHONY,
+                   useThreeChords=KEY_USE_THREE_CHORDS)
     audio = loader()
     duration = len(audio)
-    frame_start = 0
     chroma = []
     if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
         audio = audio[SAMPLE_RATE * 60:]
@@ -135,31 +145,29 @@ def estimate_key(input_audio_file, output_text_file):
         final_sample = duration - initial_sample
         audio = audio[initial_sample:final_sample]
         duration = len(audio)
-    while frame_start <= (duration - WINDOW_SIZE):
-        spek = rfft(window(audio[frame_start:frame_start + WINDOW_SIZE]))
-        if sum(spek) <= 0.01:
-            frame_start += HOP_SIZE
-            continue
+    number_of_frames = duration / HOP_SIZE
+    for bang in range(number_of_frames):
+        spek = rfft(window(cut(audio)))
         p1, p2 = speaks(spek)
         if SPECTRAL_WHITENING:
             p2 = sw(spek, p1, p2)
         pcp = hpcp(p1, p2)
-        if not DETUNING_CORRECTION or DETUNING_CORRECTION_SCOPE == 'average':
-            chroma.append(pcp)
-        elif DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'frame':
-            pcp = shift_pcp(pcp, HPCP_SIZE)
-            chroma.append(pcp)
-        else:
-            raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
-        frame_start += WINDOW_SIZE
+        sum_pcp = np.sum(pcp)
+        if sum_pcp > 0:
+            if not DETUNING_CORRECTION or DETUNING_CORRECTION_SCOPE == 'average':
+                chroma.append(pcp)
+            elif DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'frame':
+                pcp = shift_pcp(pcp, HPCP_SIZE)
+                chroma.append(pcp)
+            else:
+                raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
     if not chroma:
         return 'Silence'
     chroma = np.sum(chroma, axis=0)
     if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
         chroma = shift_pcp(list(chroma), HPCP_SIZE)
-    chroma = chroma.tolist()
-    estimation_1 = key(chroma)
-    key = estimation_1[0] + '\t' + estimation_1[1]
+    key = key(chroma.tolist())
+    key = key[0] + '\t' + key[1]
     textfile = open(output_text_file, 'w')
     textfile.write(key + '\n')
     textfile.close()
