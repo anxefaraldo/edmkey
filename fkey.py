@@ -96,8 +96,7 @@ def estimate_key(input_audio_file, output_text_file):
     loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=SAMPLE_RATE)
     window = estd.Windowing(size=WINDOW_SIZE,
-                            type=WINDOW_SHAPE,
-                            zeroPhase=False)
+                            type=WINDOW_SHAPE)
     rfft = estd.Spectrum(size=WINDOW_SIZE)
     sw = estd.SpectralWhitening(maxFrequency=MAX_HZ,
                                 sampleRate=SAMPLE_RATE)
