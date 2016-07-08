@@ -22,7 +22,7 @@ HIGHPASS_CUTOFF              = 200
 SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
-PCP_THRESHOLD                = 0.66
+PCP_THRESHOLD                = 0.66       # set to 0 to bypass parameter
 WINDOW_SIZE                  = 4096
 HOP_SIZE                     = 4096
 WINDOW_SHAPE                 = 'hann'
@@ -44,12 +44,12 @@ HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 # Scope and Key Detector Method
 # -----------------------------
 AVOID_TIME_EDGES             = 0         # percentage of track-length not analysed on the edges.
-FIRST_N_SECS                 = 0        # analyse first n seconds of each track (0 = full track)
+FIRST_N_SECS                 = 30        # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
 ANALYSIS_TYPE                = 'global'  # {'local', 'global'}
 N_WINDOWS                    = 100       # if ANALYSIS_TYPE is 'local'
 WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE is 'local'
-KEY_PROFILE                  = 'bmtg3'   # {'edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3'}
+KEY_PROFILE                  = 'edma'    # {'edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3'}
 USE_THREE_PROFILES           = True
 WITH_MODAL_DETAILS           = True
 
