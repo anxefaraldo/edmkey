@@ -41,7 +41,7 @@ HPCP_WEIGHT_TYPE             = 'squaredCosine'  # {'none', 'cosine', 'squaredCos
 # Scope and Key Detector Method
 # -----------------------------
 AVOID_TIME_EDGES             = 0  # % of track-length not analysed on the edges.
-FIRST_N_SECS                 = 30  # analyse first n seconds of each track (0 = full track)
+FIRST_N_SECS                 = 0  # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
 KEY_PROFILE                  = 'temperley'
 KEY_USE_THREE_CHORDS         = False
