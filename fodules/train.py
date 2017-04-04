@@ -120,7 +120,7 @@ targets = stringcell_from_csv(training_file, 78)    # ground-truth of the file i
 # filenames = stringcell_from_csv(training_file, 0)   # col. 0 stores the filename.
 print len(features), 'files used for training.'
 
-
+filenames
 # Split data in train and test datasets
 np.random.seed(0)  # A random permutation, to split the data randomly.
 indices = np.random.permutation(len(features))

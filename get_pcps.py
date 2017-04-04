@@ -5,8 +5,6 @@ import os
 import sys
 import numpy as np
 import essentia.standard as estd
-from fodules.pcp import *
-from fodules.folder import *
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #
@@ -23,7 +21,7 @@ HIGHPASS_CUTOFF              = 200
 SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
-PCP_THRESHOLD                = 0   # set to 0 to bypass parameter # we could assume than highuer ->> bmtg3
+PCP_THRESHOLD                = 00       # set to 0 to bypass parameter # we could assume than highuer ->> bmtg3
 WINDOW_SIZE                  = 4096
 HOP_SIZE                     = 4096
 WINDOW_SHAPE                 = 'hann'
@@ -34,8 +32,8 @@ SPECTRAL_PEAKS_MAX           = 60
 HPCP_BAND_PRESET             = False
 HPCP_SPLIT_HZ                = 250       # if HPCP_BAND_PRESET is True
 HPCP_HARMONICS               = 4
-HPCP_NON_LINEAR              = False
-HPCP_NORMALIZE               = 'none' # {none, unitSum, unitMax}
+HPCP_NON_LINEAR              = True
+HPCP_NORMALIZE               = 'unitMax' # {none, unitSum, unitMax}
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
 HPCP_SIZE                    = 12
@@ -48,17 +46,62 @@ AVOID_TIME_EDGES             = 0          # percentage of track-length not analy
 FIRST_N_SECS                 = 0          # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
 KEY_PROFILE                  = 'bmtg3'    # {'edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3'}
-USE_THREE_PROFILES           = False
-WITH_MODAL_DETAILS           = False
+USE_THREE_PROFILES           = True
+WITH_MODAL_DETAILS           = True
 
 
-def estimate_key(input_audio_file, output_text_file):
+# ===================== #
+# FUNCTION DECLARATIONS #
+# ===================== #
+
+def results_directory(out_dir):
     """
-    This function estimates the overall key of an audio track
-    optionaly with extra modal information.
-    :type input_audio_file: str
-    :type output_text_file: str
+    creates a sub-folder in the specified directory
+    with some of the algorithm parameters.
+    :type out_dir: str
     """
+    if not os.path.isdir(out_dir):
+        print("CREATING DIRECTORY '{0}'.".format(out_dir))
+        if not os.path.isabs(out_dir):
+            raise IOError("Not a valid path name.")
+        else:
+            os.mkdir(out_dir)
+    return out_dir
+
+
+def shift_pcp(pcp, pcp_size=12):
+    """
+    Shifts a PCP to the nearest tempered bin.
+    :type pcp: list
+    :type pcp_size: int
+    """
+    tuning_resolution = pcp_size / 12
+    max_val = np.max(pcp)
+    if max_val <= [0]:
+        max_val = [1]
+    pcp = np.divide(pcp, max_val)
+    max_val_index = np.where(pcp == 1)
+    max_val_index = max_val_index[0][0] % tuning_resolution
+    if max_val_index > (tuning_resolution / 2):
+        shift_distance = tuning_resolution - max_val_index
+    else:
+        shift_distance = max_val_index
+    pcp = np.roll(pcp, shift_distance)
+    return pcp
+
+
+def pcp_gate(pcp, threshold):
+    """
+    Zeroes vector elements with values under a certain threshold.
+    """
+    for i in range(len(pcp)):
+        if pcp[i] < threshold:
+            pcp[i] = 0
+    return pcp
+
+
+def global_chroma(input_audio_file):
+
     loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=SAMPLE_RATE)
     cut = estd.FrameCutter(frameSize=WINDOW_SIZE,
@@ -89,12 +132,6 @@ def estimate_key(input_audio_file, output_text_file):
                      weightType=HPCP_WEIGHT_TYPE,
                      windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
                      maxShifted=HPCP_SHIFT)
-    if USE_THREE_PROFILES:
-        key_1 = estd.KeyEDM3(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
-    else:
-        key_1 = estd.KeyEDM(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
-    if WITH_MODAL_DETAILS:
-        key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
     audio = hpf(hpf(hpf(loader())))
     duration = len(audio)
     chroma = []
@@ -117,7 +154,9 @@ def estimate_key(input_audio_file, output_text_file):
         if SPECTRAL_WHITENING:
             p2 = sw(spek, p1, p2)
         pcp = hpcp(p1, p2)
-        if np.sum(pcp) > 0:
+        pcp = pcp_gate(pcp, PCP_THRESHOLD)
+        sum_pcp = np.sum(pcp)
+        if sum_pcp > 0:
             if not DETUNING_CORRECTION or DETUNING_CORRECTION_SCOPE == 'average':
                 chroma.append(pcp)
             elif DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'frame':
@@ -128,30 +167,9 @@ def estimate_key(input_audio_file, output_text_file):
     if not chroma:
         return 'Silence'
     chroma = np.sum(chroma, axis=0)
-    chroma = normalize_pcp_peak(chroma)
-    chroma = pcp_gate(chroma, PCP_THRESHOLD)
     if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
         chroma = shift_pcp(list(chroma), HPCP_SIZE)
-    chroma = chroma.tolist()
-    estimation_1 = key_1(chroma)
-    key_1 = estimation_1[0] + '\t' + estimation_1[1]
-    if WITH_MODAL_DETAILS:
-        estimation_2 = key_2(chroma)
-        key_2 = estimation_2[0] + '\t' + estimation_2[1]
-    if WITH_MODAL_DETAILS:
-        key_verbose = key_1 + '\t' + key_2
-        key = key_verbose.split('\t')
-        # SIMPLE RULES BASED ON THE MULTIPLE ESTIMATIONS TO IMPROVE THE RESULTS:
-        if key[3] == 'monotonic' and key[0] == key[2]:
-            key = '{0}\tminor'.format(key[0])
-        else:
-            key = "{0}\t{1}".format(key[0], key[1])
-    else:
-        key = key_1
-    textfile = open(output_text_file, 'w')
-    textfile.write(key + '\n')
-    textfile.close()
-    return key
+    return chroma
 
 
 if __name__ == "__main__":
@@ -186,8 +204,7 @@ if __name__ == "__main__":
             sys.exit()
         elif os.path.isfile(args.input):
             print("\nAnalysing:\t{0}".format(args.input))
-            print("Exporting to:\t{0}.".format(args.output))
-            estimation = estimate_key(args.input, args.output)
+            estimation = global_chroma(args.input)
             if args.verbose:
                 print(":\t{0}".format(estimation)),
         else:
@@ -210,7 +227,7 @@ if __name__ == "__main__":
                 if any(soundfile_type in a_file for soundfile_type in VALID_FILE_TYPES):
                     input_file = args.input + '/' + a_file
                     output_file = args.output + '/' + a_file[:-4] + '.txt'
-                    estimation = estimate_key(input_file, output_file)
+                    estimation = global_chroma(input_file, output_file)
                     if args.verbose:
                         print("{0} - {1}".format(input_file, estimation))
                     count_files += 1

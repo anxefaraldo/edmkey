@@ -67,10 +67,7 @@ void KeyEDM::configure() {
     { 1.00  , 0.10  , 0.36  , 0.39  , 0.29  , 0.38  , 0.10  , 0.74  , 0.27  , 0.10  , 0.42  , 0.23   },
 
     { 1.00  , 0.00  , 0.42  , 0.00  , 0.53  , 0.37  , 0.00  , 0.76  , 0.00  , 0.38,   0.21  , 0.30   }, // bmtg3
-    { 1.00  , 0.00  , 0.36  , 0.39  , 0.10  , 0.37  , 0.00  , 0.76  , 0.27  , 0.00  , 0.42  , 0.23   },
-
-    { 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000 }, // empty
-    { 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000 } 
+    { 1.00  , 0.00  , 0.36  , 0.39  , 0.10  , 0.37  , 0.00  , 0.76  , 0.27  , 0.00  , 0.42  , 0.23   }
 //    I       bII     II      bIII    III     IV      #IV     V       bVI     VI      bVII    VII
 
 };
@@ -82,7 +79,6 @@ void KeyEDM::configure() {
   else if (_profileType == "bmtg1") { SET_PROFILE(2);  }
   else if (_profileType == "bmtg2") { SET_PROFILE(3);  }
   else if (_profileType == "bmtg3") { SET_PROFILE(4);  }
-  else if (_profileType == "empty") { SET_PROFILE(5);  }
   else {
     throw EssentiaException("KeyEDM: Unsupported profile type: ", _profileType);
   }

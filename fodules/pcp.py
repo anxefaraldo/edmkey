@@ -27,7 +27,6 @@ def normalize_pcp_peak(pcp):
     new_format = []
     for item in pcp:
         new_format.append(round(item, 3))
-    print new_format
     return new_format
 
 
@@ -52,13 +51,13 @@ def shift_pcp(pcp, pcp_size=12):
     return pcp
 
 
-def transpose_pcp(pcp, tonic, pcp_size=36):
+def transpose_pcp(pcp, tonic_pc, pcp_size=36):
     """
     Takes an incoming pcp (assuming its first position
     corresponds to the note A and transposes it down so that
     the tonic note corresponds to the first place in the vector.
     """
-    transposed = np.roll(pcp, (pcp_size / 12.0) * ((tonic - 9) % 12) * -1)
+    transposed = np.roll(pcp, (pcp_size / 12.0) * ((tonic_pc - 9) % 12) * -1)
     return transposed
 
 

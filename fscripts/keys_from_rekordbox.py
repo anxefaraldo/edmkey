@@ -23,4 +23,3 @@ while len(text) > 1:
     print filename, key
     f.write(key)
     f.close()
-

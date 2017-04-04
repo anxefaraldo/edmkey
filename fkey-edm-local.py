@@ -8,6 +8,7 @@ import essentia.standard as estd
 from fodules.pcp import *
 from fodules.folder import *
 
+
 # ======================= #
 # KEY ESTIMATION SETTINGS #
 # ======================= #
@@ -23,7 +24,7 @@ HIGHPASS_CUTOFF              = 200
 SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
-PCP_THRESHOLD                = 0   # set to 0 to bypass parameter # we could assume than highuer ->> bmtg3
+PCP_THRESHOLD                = 0    # set to 0 to bypass parameter # we could assume than highuer ->> bmtg3
 WINDOW_SIZE                  = 4096
 HOP_SIZE                     = 4096
 WINDOW_SHAPE                 = 'hann'
@@ -47,9 +48,13 @@ HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 AVOID_TIME_EDGES             = 0          # percentage of track-length not analysed on the edges.
 FIRST_N_SECS                 = 0          # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
+ANALYSIS_TYPE                = 'local'  # {'local', 'global'}
+N_WINDOWS                    = 100       # if ANALYSIS_TYPE is 'local'
+WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE is 'local'
 KEY_PROFILE                  = 'bmtg3'    # {'edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3'}
-USE_THREE_PROFILES           = False
-WITH_MODAL_DETAILS           = False
+USE_THREE_PROFILES           = True
+WITH_MODAL_DETAILS           = True
+
 
 
 def estimate_key(input_audio_file, output_text_file):
@@ -61,8 +66,6 @@ def estimate_key(input_audio_file, output_text_file):
     """
     loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=SAMPLE_RATE)
-    cut = estd.FrameCutter(frameSize=WINDOW_SIZE,
-                           hopSize=HOP_SIZE)
     hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF,
                         sampleRate=SAMPLE_RATE)
     window = estd.Windowing(size=WINDOW_SIZE,
@@ -96,6 +99,7 @@ def estimate_key(input_audio_file, output_text_file):
     if WITH_MODAL_DETAILS:
         key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
     audio = hpf(hpf(hpf(loader())))
+    frame_start = 0
     duration = len(audio)
     chroma = []
     if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
@@ -110,9 +114,11 @@ def estimate_key(input_audio_file, output_text_file):
         final_sample = duration - initial_sample
         audio = audio[initial_sample:final_sample]
         duration = len(audio)
-    number_of_frames = duration / HOP_SIZE
-    for bang in range(number_of_frames):
-        spek = rfft(window(cut(audio)))
+    while frame_start <= (duration - WINDOW_SIZE):
+        spek = rfft(window(audio[frame_start:frame_start + WINDOW_SIZE]))
+        if sum(spek) <= 0.01: # esto consume bastante!
+            frame_start += HOP_SIZE
+            continue
         p1, p2 = speaks(spek)
         if SPECTRAL_WHITENING:
             p2 = sw(spek, p1, p2)
@@ -125,6 +131,7 @@ def estimate_key(input_audio_file, output_text_file):
                 chroma.append(pcp)
             else:
                 raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
+        frame_start += HOP_SIZE
     if not chroma:
         return 'Silence'
     chroma = np.sum(chroma, axis=0)
