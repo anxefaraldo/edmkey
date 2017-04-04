@@ -69,5 +69,3 @@ write_conf_to = open(output_dir + '/conf.txt', 'w')
 write_conf_to.write(conf_file.read())
 write_conf_to.close()
 conf_file.close()
-
-

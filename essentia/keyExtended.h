@@ -54,6 +54,7 @@ class KeyExtended : public Algorithm {
   void configure();
 
   static const char* name;
+  static const char* category;
   static const char* description;
 
 protected:
@@ -166,6 +167,7 @@ class KeyExtended : public AlgorithmComposite {
   void reset();
 
   static const char* name;
+  static const char* category;
   static const char* description;
 
 };

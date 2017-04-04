@@ -36,7 +36,7 @@ def estimate_key(soundfile, write_to):
                      referenceFrequency=HPCP_REFERENCE_HZ,
                      sampleRate=SAMPLE_RATE,
                      size=HPCP_SIZE,
-                     splitFrequency=HPCP_SPLIT_HZ,
+                     bandSplitFrequency=HPCP_SPLIT_HZ,
                      weightType=HPCP_WEIGHT_TYPE,
                      windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
                      maxShifted=HPCP_SHIFT)

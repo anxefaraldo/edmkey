@@ -26,6 +26,7 @@ namespace essentia {
 namespace standard {
 
 const char* KeyExtended::name = "KeyExtended";
+const char* KeyExtended::category = "Tonal";
 const char* KeyExtended::description = DOC("Using pitch profile classes, this algorithm calculates the best matching key estimate for a given HPCP. The algorithm was severely adapted and changed from the original implementation for readability and speed.\n"
 "\n"
 "Key will throw exceptions either when the input pcp size is not a positive multiple of 12 or if the key could not be found."
@@ -506,6 +507,7 @@ namespace essentia {
 namespace streaming {
 
 const char* KeyExtended::name = standard::KeyExtended::name;
+const char* KeyExtended::category = standard::KeyExtended::category;
 const char* KeyExtended::description = standard::KeyExtended::description;
 
 KeyExtended::KeyExtended() : AlgorithmComposite() {

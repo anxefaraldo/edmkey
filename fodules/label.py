@@ -42,19 +42,19 @@ def mode_to_num(mode):
     return mode2num[mode]
 
 
-def key_to_list(key):
-    """
-    Converts a key (i.e. C major) type into a
-    numeric list in the form [tonic, mode].
-    :type key: str
-    """
-    key = key.split(' ')
-    key[-1] = key[-1].strip()
-    if len(key) == 1:
-        key = [name_to_class(key[0]), 0]
-    else:
-        key = [name_to_class(key[0]), mode_to_num(key[1])]
-    return key
+# def key_to_list(key):
+#     """
+#     Converts a key (i.e. C major) type into a
+#     numeric list in the form [tonic, mode].
+#     :type key: str
+#     """
+#     key = key.split(' ')
+#     key[-1] = key[-1].strip()
+#     if len(key) == 1:
+#         key = [name_to_class(key[0]), 0]
+#     else:
+#         key = [name_to_class(key[0]), mode_to_num(key[1])]
+#     return key
 
 
 def key_to_int(key):

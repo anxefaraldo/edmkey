@@ -33,7 +33,7 @@ HPCP_BAND_PRESET             = False
 HPCP_SPLIT_HZ                = 250       # if HPCP_BAND_PRESET is True
 HPCP_HARMONICS               = 4
 HPCP_NON_LINEAR              = True
-HPCP_NORMALIZE               = True
+HPCP_NORMALIZE               = 'unitMax' # {none, unitSum, unitMax}
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
 HPCP_SIZE                    = 36
@@ -134,9 +134,9 @@ def estimate_key(input_audio_file, output_text_file):
                      referenceFrequency=HPCP_REFERENCE_HZ,
                      sampleRate=SAMPLE_RATE,
                      size=HPCP_SIZE,
-                     weightType=HPCP_WEIGHT_TYPE)
-                     # windowSize=HPCP_WEIGHT_WINDOW_SEMITONES)
-                     # maxShifted=HPCP_SHIFT)
+                     weightType=HPCP_WEIGHT_TYPE,
+                     windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
+                     maxShifted=HPCP_SHIFT)
     if USE_THREE_PROFILES:
         key_1 = estd.KeyEDM3(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
     else:
@@ -219,6 +219,11 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--verbose",
                         action="store_true",
                         help="print progress to console")
+    parser.add_argument("-x", "--extra",
+                        action="store_true",
+                        help="generate extra analysis files")
+    parser.add_argument("-c", "--conf_file",
+                        help="specify a different configuration file")
     args = parser.parse_args()
 
     if not args.batch_mode:
@@ -240,14 +245,14 @@ if __name__ == "__main__":
             analysis_folder = args.input[1 + args.input.rfind('/'):]
             if os.path.isfile(args.output):
                 print("\nWARNING:")
-                print("It seems that you are trying to write onto an existing file")
+                print("It seems that you are trying to replace an existing file")
                 print("In batch_mode, the output argument must be a directory".format(args.output))
-                print("Type 'Fkey3 -h' for help\n")
+                print("Type 'fkey -h' for help\n")
                 sys.exit()
             output_dir = results_directory(args.output)
             list_all_files = os.listdir(args.input)
             print("\nAnalysing audio files in:\t{0}".format(args.input))
-            print("Writing estimation files to:\t{0}\n".format(args.output))
+            print("Writing results to:\t{0}\n".format(args.output))
             count_files = 0
             for a_file in list_all_files:
                 if any(soundfile_type in a_file for soundfile_type in VALID_FILE_TYPES):

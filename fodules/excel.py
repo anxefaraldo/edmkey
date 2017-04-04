@@ -25,6 +25,8 @@ def matrix_to_excel(my_matrix,
                     label_cols=('C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'),
                     filename='matrix.xls'):
 
+    import xlwt
+
     wb = xlwt.Workbook()
     ws = wb.add_sheet('Sheet1')
 

@@ -55,6 +55,7 @@ class KeyEDM3 : public Algorithm {
   void configure();
 
   static const char* name;
+  static const char* category;
   static const char* description;
 
 protected:
@@ -132,6 +133,7 @@ class KeyEDM3 : public AlgorithmComposite {
   void reset();
 
   static const char* name;
+  static const char* category;
   static const char* description;
 
 };
