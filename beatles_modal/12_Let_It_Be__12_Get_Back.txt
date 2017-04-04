@@ -1,0 +1,3 @@
+0.000	Silence
+0.365	A:mixolydian
+185.355	Silence

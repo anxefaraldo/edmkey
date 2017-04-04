@@ -1,0 +1,113 @@
+
+bmtg3_binary
+
+0.601 Correct
+0.093 Fifth error
+0.091 Relative error
+0.081 Parallel error
+0.134 Other errors
+0.691 Weighted score
+
+bmtg3_three
+
+0.626 Correct
+0.091 Fifth error
+0.086 Relative error
+0.063 Parallel error
+0.134 Other errors
+0.710 Weighted score
+
+bmtg3_multi
+
+0.627 Correct
+0.091 Fifth error
+0.079 Relative error
+0.061 Parallel error
+0.141 Other errors
+0.709 Weighted score
+
+bmtg3_multi(andthree)-with12bins!
+
+0.632 Correct
+0.091 Fifth error
+0.088 Relative error
+0.058 Parallel error
+0.131 Other errors
+0.716 Weighted score
+
+==========================================
+
+bmtg2_binary
+
+0.606 Correct
+0.093 Fifth error
+0.089 Relative error
+0.075 Parallel error
+0.137 Other errors
+0.694 Weighted score
+
+bmtg2_three
+
+0.611 Correct
+0.094 Fifth error
+0.089 Relative error
+0.070 Parallel error
+0.136 Other errors
+0.699 Weighted score
+
+three with 12 bins!
+0.631 Correct
+0.098 Fifth error
+0.094 Relative error
+0.060 Parallel error
+0.118 Other errors
+0.720 Weighted score
+
+
+bmtg2_multi
+
+0.616 Correct
+0.094 Fifth error
+0.081 Relative error
+0.065 Parallel error
+0.144 Other errors
+0.700 Weighted score
+
+multi with 12 
+0.631 Correct
+0.098 Fifth error
+0.093 Relative error
+0.060 Parallel error
+0.119 Other errors
+0.719 Weighted score
+
+
+==========================================
+
+bmtg1_binary
+
+0.593 Correct
+0.096 Fifth error
+0.093 Relative error
+0.075 Parallel error
+0.144 Other errors
+0.683 Weighted score
+
+bmtg1_three
+
+0.603 Correct
+0.098 Fifth error
+0.093 Relative error
+0.068 Parallel error
+0.139 Other errors
+0.693 Weighted score
+
+bmtg1_multi
+
+0.609 Correct
+0.098 Fifth error
+0.084 Relative error
+0.061 Parallel error
+0.147 Other errors
+0.696 Weighted score
+
