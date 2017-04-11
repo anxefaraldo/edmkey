@@ -1,55 +1,13 @@
 #!/usr/local/bin/python
 #  -*- coding: UTF-8 -*-
 
-import os
 import sys
-import numpy as np
+
 import essentia.standard as estd
-from fodules.pcp import *
-from fodules.folder import *
 
-# ======================= #
-# KEY ESTIMATION SETTINGS #
-# ======================= #
-
-# File Settings
-# -------------
-SAMPLE_RATE                  = 44100
-VALID_FILE_TYPES             = {'.wav', '.mp3', 'flac', '.aiff', '.ogg'}
-
-# Analysis Parameters
-# -------------------
-HIGHPASS_CUTOFF              = 200
-SPECTRAL_WHITENING           = True
-DETUNING_CORRECTION          = True
-DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
-PCP_THRESHOLD                = 0   # set to 0 to bypass parameter # we could assume than highuer ->> bmtg3
-WINDOW_SIZE                  = 4096
-HOP_SIZE                     = 4096
-WINDOW_SHAPE                 = 'hann'
-MIN_HZ                       = 25
-MAX_HZ                       = 3500
-SPECTRAL_PEAKS_THRESHOLD     = 0.0001
-SPECTRAL_PEAKS_MAX           = 60
-HPCP_BAND_PRESET             = False
-HPCP_SPLIT_HZ                = 250       # if HPCP_BAND_PRESET is True
-HPCP_HARMONICS               = 4
-HPCP_NON_LINEAR              = False
-HPCP_NORMALIZE               = 'none' # {none, unitSum, unitMax}
-HPCP_SHIFT                   = False
-HPCP_REFERENCE_HZ            = 440
-HPCP_SIZE                    = 12
-HPCP_WEIGHT_WINDOW_SEMITONES = 1         # semitones
-HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
-
-# Scope and Key Detector Method
-# -----------------------------
-AVOID_TIME_EDGES             = 0          # percentage of track-length not analysed on the edges.
-FIRST_N_SECS                 = 0          # analyse first n seconds of each track (0 = full track)
-SKIP_FIRST_MINUTE            = False
-KEY_PROFILE                  = 'bmtg3'    # {'edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3'}
-USE_THREE_PROFILES           = False
-WITH_MODAL_DETAILS           = False
+from pcp import *
+from fileutils import *
+from settings import *
 
 
 def estimate_key(input_audio_file, output_text_file):
@@ -63,8 +21,6 @@ def estimate_key(input_audio_file, output_text_file):
                              sampleRate=SAMPLE_RATE)
     cut = estd.FrameCutter(frameSize=WINDOW_SIZE,
                            hopSize=HOP_SIZE)
-    hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF,
-                        sampleRate=SAMPLE_RATE)
     window = estd.Windowing(size=WINDOW_SIZE,
                             type=WINDOW_SHAPE,
                             zeroPhase=False)
@@ -95,7 +51,12 @@ def estimate_key(input_audio_file, output_text_file):
         key_1 = estd.KeyEDM(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
     if WITH_MODAL_DETAILS:
         key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
-    audio = hpf(hpf(hpf(loader())))
+    if HIGHPASS_CUTOFF == 0:
+        audio = loader()
+    else:
+        hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF,
+                            sampleRate=SAMPLE_RATE)
+        audio = hpf(hpf(hpf(loader())))
     duration = len(audio)
     chroma = []
     if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
@@ -129,7 +90,8 @@ def estimate_key(input_audio_file, output_text_file):
         return 'Silence'
     chroma = np.sum(chroma, axis=0)
     chroma = normalize_pcp_peak(chroma)
-    chroma = pcp_gate(chroma, PCP_THRESHOLD)
+    if PCP_THRESHOLD != 0:
+        chroma = pcp_gate(chroma, PCP_THRESHOLD)
     if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
         chroma = shift_pcp(list(chroma), HPCP_SIZE)
     chroma = chroma.tolist()
@@ -141,11 +103,15 @@ def estimate_key(input_audio_file, output_text_file):
     if WITH_MODAL_DETAILS:
         key_verbose = key_1 + '\t' + key_2
         key = key_verbose.split('\t')
-        # SIMPLE RULES BASED ON THE MULTIPLE ESTIMATIONS TO IMPROVE THE RESULTS:
+        # Assign amodal or difficult tracks to minor:
         if key[3] == 'monotonic' and key[0] == key[2]:
             key = '{0}\tminor'.format(key[0])
+        # if key[3] == 'fifth' and key[0] == key[2]:
+             # key = '{0}\tminor'.format(key[0])
+        # if key[3] == 'difficult' and key[0] == key[2]:
+        #    key = '{0}\tminor'.format(key[0])
         else:
-            key = "{0}\t{1}".format(key[0], key[1])
+            key = key_1
     else:
         key = key_1
     textfile = open(output_text_file, 'w')

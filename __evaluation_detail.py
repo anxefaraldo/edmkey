@@ -1,12 +1,13 @@
 #!/usr/local/bin/python
 # -*- coding: UTF-8 -*-
 
-import os
 import argparse
-from fodules.label import *
+import os
+
 from fodules.evaluate import *
-from futils.merge_files import merge_files
 from fodules.excel import matrix_to_excel
+
+from fscripts.merge_files import merge_files
 
 parser = argparse.ArgumentParser(prog='evaluation_detail',
                                  formatter_class=argparse.RawDescriptionHelpFormatter,

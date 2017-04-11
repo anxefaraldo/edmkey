@@ -1,5 +1,5 @@
 from fodules.pcp import *
-from conf import *
+from settings import *
 
 
 def format_output(filename):

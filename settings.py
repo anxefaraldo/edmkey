@@ -1,3 +1,4 @@
+
 # ======================= #
 # KEY ESTIMATION SETTINGS #
 # ======================= #
@@ -6,6 +7,7 @@
 # -------------
 SAMPLE_RATE                  = 44100
 VALID_FILE_TYPES             = {'.wav', '.mp3', 'flac', '.aiff', '.ogg'}
+RAW_OUTPUT                   = False
 
 # Analysis Parameters
 # -------------------
@@ -13,7 +15,7 @@ HIGHPASS_CUTOFF              = 200
 SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
-PCP_THRESHOLD                = 0.66
+PCP_THRESHOLD                = 0.2
 WINDOW_SIZE                  = 4096
 HOP_SIZE                     = 4096
 WINDOW_SHAPE                 = 'hann'
@@ -24,8 +26,8 @@ SPECTRAL_PEAKS_MAX           = 60
 HPCP_BAND_PRESET             = False
 HPCP_SPLIT_HZ                = 250       # if HPCP_BAND_PRESET is True
 HPCP_HARMONICS               = 4
-HPCP_NON_LINEAR              = True
-HPCP_NORMALIZE               = 'unitMax'
+HPCP_NON_LINEAR              = False
+HPCP_NORMALIZE               = 'none'  # {none, unitSum, unitMax}
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
 HPCP_SIZE                    = 36
@@ -40,6 +42,6 @@ SKIP_FIRST_MINUTE            = False
 ANALYSIS_TYPE                = 'global'  # {'local', 'global'}
 N_WINDOWS                    = 100       # if ANALYSIS_TYPE is 'local'
 WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE is 'local'
-KEY_PROFILE                  = 'bmtg3'   # {'edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3'}
+KEY_PROFILE                  = 'bmtg'   # {'edma', 'edmm', 'bmtg', 'bmtg-raw'}
 USE_THREE_PROFILES           = True
 WITH_MODAL_DETAILS           = True

@@ -3,7 +3,7 @@
 
 import os
 import numpy as np
-from label import name_to_class
+from conversions import name_to_class
 
 
 def normalize_pcp_area(pcp):
@@ -103,11 +103,3 @@ def pcp_sort(pcp):
         idx.append(new_index)
         pcp[new_index] = -1
     return idx
-
-
-def bin_to_pc(binary, pcp_size=36):
-    """
-    Returns the pitch-class of the specified pcp vector.
-    It assumes (bin[0] == pc9) as implemeted in Essentia.
-    """
-    return int((binary / (pcp_size / 12.0)) + 9) % 12

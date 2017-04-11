@@ -60,25 +60,21 @@ void KeyEDM::configure() {
     { 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000 }, // edmm, [2]
     { 1.0000, 0.2321, 0.4415, 0.6962, 0.3262, 0.4948, 0.2889, 0.7804, 0.4328, 0.2903, 0.5331, 0.3217 },
 
-    { 1.0000, 0.1573, 0.4200, 0.1570, 0.5296, 0.3669, 0.1632, 0.7711, 0.1676, 0.3827, 0.2113, 0.2965 }, // bmtg1
+    { 1.0000, 0.1573, 0.4200, 0.1570, 0.5296, 0.3669, 0.1632, 0.7711, 0.1676, 0.3827, 0.2113, 0.2965 }, // bmtg-raw
     { 1.0000, 0.2330, 0.3615, 0.3905, 0.2925, 0.3777, 0.1961, 0.7425, 0.2701, 0.2161, 0.4228, 0.2272 },
 
-    { 1.00  , 0.10  , 0.42  , 0.10  , 0.53  , 0.37  , 0.10  , 0.77  , 0.10  , 0.38  , 0.21  , 0.30   }, // bmtg2
-    { 1.00  , 0.10  , 0.36  , 0.39  , 0.29  , 0.38  , 0.10  , 0.74  , 0.27  , 0.10  , 0.42  , 0.23   },
-
-    { 1.00  , 0.00  , 0.42  , 0.00  , 0.53  , 0.37  , 0.00  , 0.76  , 0.00  , 0.38,   0.21  , 0.30   }, // bmtg3
-    { 1.00  , 0.00  , 0.36  , 0.39  , 0.10  , 0.37  , 0.00  , 0.76  , 0.27  , 0.00  , 0.42  , 0.23   }
+    { 1.00  , 0.00  , 0.42  , 0.00  , 0.53  , 0.37  , 0.00  , 0.77  , 0.00  , 0.38,   0.21  , 0.30   }, // bmtg
+    { 1.00  , 0.00  , 0.36  , 0.39  , 0.00  , 0.38  , 0.00  , 0.74  , 0.27  , 0.00  , 0.42  , 0.23   }
 //    I       bII     II      bIII    III     IV      #IV     V       bVI     VI      bVII    VII
 
 };
 
 #define SET_PROFILE(i) _M = arrayToVector<Real>(profileTypes[2*i]); _m = arrayToVector<Real>(profileTypes[2*i+1])
 
-  if      (_profileType == "edma")  { SET_PROFILE(0);  }
-  else if (_profileType == "edmm")  { SET_PROFILE(1);  }
-  else if (_profileType == "bmtg1") { SET_PROFILE(2);  }
-  else if (_profileType == "bmtg2") { SET_PROFILE(3);  }
-  else if (_profileType == "bmtg3") { SET_PROFILE(4);  }
+  if      (_profileType == "edma")     { SET_PROFILE(0);  }
+  else if (_profileType == "edmm")     { SET_PROFILE(1);  }
+  else if (_profileType == "bmtg-raw") { SET_PROFILE(2);  }
+  else if (_profileType == "bmtg")     { SET_PROFILE(3);  }
   else {
     throw EssentiaException("KeyEDM: Unsupported profile type: ", _profileType);
   }

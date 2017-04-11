@@ -47,7 +47,7 @@ class KeyEDM3 : public Algorithm {
   }
 
   void declareParameters() {
-    declareParameter("profileType", "the type of polyphic profile to use for correlation calculation", "{bmtg1,bmtg2,bmtg3,edma}", "bmtg3");
+    declareParameter("profileType", "the type of polyphic profile to use for correlation calculation", "{bmtg-raw,bmtg,edma}", "bmtg");
     declareParameter("pcpSize", "number of divisions per octave (12*i). This parameter is only a hint; During computation the size of the input PCP is used instead)", "[12,inf)", 36);
   }
 
@@ -115,7 +115,7 @@ class KeyEDM3 : public AlgorithmComposite {
   ~KeyEDM3();
 
   void declareParameters() {
-    declareParameter("profileType", "the type of polyphic profile to use for correlation calculation", "{bmtg1,bmtg2,bmtg3,edma}", "bmtg3");
+    declareParameter("profileType", "the type of polyphic profile to use for correlation calculation", "{bmtg-raw,bmtg,edma}", "bmtg");
     declareParameter("pcpSize", "number of divisions per octave (12*i). This parameter is only a hint; During computation the size of the input PCP is used instead)", "[12,inf)", 36);
   }
 

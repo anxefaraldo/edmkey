@@ -3,67 +3,7 @@
 
 import os
 from numpy import divide, mean, array, zeros
-
-def name_to_class(key):
-    """
-    Converts a note name to its pitch-class value.
-    :type key: str
-    """
-    name2class = {'B#': 0,  'C':  0,
-                  'C#': 1,  'Db': 1,
-                  'D':  2,
-                  'D#': 3,  'Eb': 3,
-                  'E':  4,  'Fb': 4,
-                  'E#': 5,  'F':  5,
-                  'F#': 6,  'Gb': 6,
-                  'G':  7,
-                  'G#': 8,  'Ab': 8,
-                  'A':  9,  'A#': 10,
-                  'Bb': 10, 'B':  11,
-                  'Cb': 11,
-                  '??': 12, '-':  12}
-    try:
-        return name2class[key]
-    except KeyError:
-        print('name not defined in dictionary')
-
-
-def mode_to_num(mode):
-    """
-    Converts a scale type into numeric values (maj = 0, min = 1).
-    :type mode: str
-    """
-    mode2num = {'major': 0,
-                'minor': 1,
-                'maj':   0,
-                'min':   1,
-                'M':     0,
-                'm':     1,
-                '':      0}
-    try:
-        return mode2num[mode]
-    except KeyError:
-        print('mode type not defined in dictionary')
-
-
-def key_to_list(key):
-    """
-    Converts a key (i.e. C major) type into a
-    numeric list in the form [tonic, mode].
-    :type key: str
-    """
-    if len(key) <= 2:
-        key = key.strip()
-        key = [name_to_class(key), 0]
-        return key
-    elif '\t' in key[1:3]:
-        key = key.split('\t')
-    elif ' ' in key[1:3]:
-        key = key.split(' ')
-    key[-1] = key[-1].strip()
-    key = [name_to_class(key[0]), mode_to_num(key[1])]
-    return key
-
+from conversions import *
 
 def mirex_score(estimation, groundtruth):
     """

@@ -9,13 +9,14 @@ sys.path.insert(1, os.path.join(currentFolderPath, "site-packages"))
 print sys.path
 """
 
-from time import clock
-from fodules.train import *
-from fodules.folder import make_unique_dir
 from argparse import ArgumentParser
+from time import clock
+
+from ML.train import *
+from fodules.folder import make_unique_dir
 
 clock()
-conf_file = open('./conf.py', 'r')
+conf_file = open('./settings.py', 'r')
 parser = ArgumentParser(description="Key Estimation Algorithm")
 parser.add_argument("input_data_folder",
                     help="dir with audio files to analyse")
