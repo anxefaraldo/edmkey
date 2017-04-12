@@ -82,7 +82,8 @@ def get_key(input_audio_file, output_text_file):
     #                                         bins_per_octave=HPCP_SIZE)
     #                                         cqt_mode='full')
     duration = len(audio)
-    chroma = []
+    print audio[0]
+    chroma = np.empty(HPCP_SIZE)
     if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
         audio = audio[SAMPLE_RATE * 60:]
         duration = len(audio)
@@ -97,7 +98,8 @@ def get_key(input_audio_file, output_text_file):
         duration = len(audio)
     number_of_frames = duration / HOP_SIZE
     for bang in range(number_of_frames):
-        spek = rfft(window(cut(audio)))
+        spek = rfft(window(cut(audio[0])))
+        print spek
         p1, p2 = speaks(spek)
         if SPECTRAL_WHITENING:
             p2 = sw(spek, p1, p2)
@@ -111,8 +113,9 @@ def get_key(input_audio_file, output_text_file):
             else:
                 raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
     if not chroma:
-        return 'Silence'
+        return 'Silence\n'
     chroma = np.sum(chroma, axis=0)
+    print chroma
     chroma = normalize_pcp_peak(chroma)
     if PCP_THRESHOLD != 0:
         chroma = pcp_gate(chroma, PCP_THRESHOLD)
