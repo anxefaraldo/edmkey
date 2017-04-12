@@ -25,8 +25,8 @@ def get_key(input_audio_file, output_text_file):
     """
     # I am going to try tro get rid of essentia's modules... especially those prone to have errors...
     # I mostly will use librosa to this purpose
-    loader = estd.MonoLoader(filename=input_audio_file,
-                             sampleRate=SAMPLE_RATE)
+    ##### loader = estd.MonoLoader(filename=input_audio_file,
+    #####                          sampleRate=SAMPLE_RATE)
     cut = estd.FrameCutter(frameSize=WINDOW_SIZE,
                            hopSize=HOP_SIZE)
     window = estd.Windowing(size=WINDOW_SIZE,
@@ -62,15 +62,15 @@ def get_key(input_audio_file, output_text_file):
     if WITH_MODAL_DETAILS:
         key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
     if HIGHPASS_CUTOFF == 0:
-        audio = loader()
+        ##### audio = loader()
+        audio = librosa.load(path=input_audio_file, sr=SAMPLE_RATE)
     else:
-        hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF,
-                            sampleRate=SAMPLE_RATE)
-        audio = hpf(hpf(hpf(loader())))
-    audiol,sr = librosa.load(path=input_audio_file, sr=SAMPLE_RATE)
+        ##### hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF, sampleRate=SAMPLE_RATE)
+        ##### audio = hpf(hpf(hpf(loader())))
+        audio = librosa.load(path=input_audio_file, sr=SAMPLE_RATE)
     #chroma_cqt = librosa.feature.chroma_cqt(y=audiol,
     #                                         sr=SAMPLE_RATE)
-    #                                         C=None,
+    #                                             C=None,
     #                                         hop_length=HOP_SIZE,
     #                                         # fmin=None,
     #                                         # norm=np.inf,
@@ -82,7 +82,6 @@ def get_key(input_audio_file, output_text_file):
     #                                         bins_per_octave=HPCP_SIZE)
     #                                         cqt_mode='full')
     duration = len(audio)
-
     chroma = []
     if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
         audio = audio[SAMPLE_RATE * 60:]

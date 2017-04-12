@@ -13,7 +13,7 @@ RAW_OUTPUT                   = False
 # -------------------
 HIGHPASS_CUTOFF              = 0
 SPECTRAL_WHITENING           = False
-DETUNING_CORRECTION          = False
+DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
 PCP_THRESHOLD                = 0
 WINDOW_SIZE                  = 4096
