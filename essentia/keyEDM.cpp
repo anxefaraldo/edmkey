@@ -1,4 +1,4 @@
-/*
+	/*
  * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
@@ -129,7 +129,7 @@ void KeyEDM::compute() {
     // Compute maximum value for major keys
     if (corrMajor > maxMaj) {
       max2Maj = maxMaj;
-      maxMaj = corrMajor;
+	      maxMaj = corrMajor;
       keyIndexMaj = shift;
     }
 

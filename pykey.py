@@ -2,6 +2,12 @@
 #  -*- coding: UTF-8 -*-
 
 import sys
+import librosa
+import librosa.display
+import matplotlib.pyplot as plt
+
+import numpy as np
+import scipy.stats
 
 import essentia.standard as estd
 
@@ -10,13 +16,15 @@ from fileutils import *
 from settings import *
 
 
-def estimate_key(input_audio_file, output_text_file):
+def get_key(input_audio_file, output_text_file):
     """
     This function estimates the overall key of an audio track
     optionaly with extra modal information.
     :type input_audio_file: str
     :type output_text_file: str
     """
+    # I am going to try tro get rid of essentia's modules... especially those prone to have errors...
+    # I mostly will use librosa to this purpose
     loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=SAMPLE_RATE)
     cut = estd.FrameCutter(frameSize=WINDOW_SIZE,
@@ -24,6 +32,7 @@ def estimate_key(input_audio_file, output_text_file):
     window = estd.Windowing(size=WINDOW_SIZE,
                             type=WINDOW_SHAPE,
                             zeroPhase=False)
+    # In particular the fft part will be rewritten...
     rfft = estd.Spectrum(size=WINDOW_SIZE)
     sw = estd.SpectralWhitening(maxFrequency=MAX_HZ,
                                 sampleRate=SAMPLE_RATE)
@@ -45,6 +54,7 @@ def estimate_key(input_audio_file, output_text_file):
                      weightType=HPCP_WEIGHT_TYPE,
                      windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
                      maxShifted=HPCP_SHIFT)
+
     if USE_THREE_PROFILES:
         key_1 = estd.KeyEDM3(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
     else:
@@ -57,7 +67,22 @@ def estimate_key(input_audio_file, output_text_file):
         hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF,
                             sampleRate=SAMPLE_RATE)
         audio = hpf(hpf(hpf(loader())))
+    audiol,sr = librosa.load(path=input_audio_file, sr=SAMPLE_RATE)
+    #chroma_cqt = librosa.feature.chroma_cqt(y=audiol,
+    #                                         sr=SAMPLE_RATE)
+    #                                         C=None,
+    #                                         hop_length=HOP_SIZE,
+    #                                         # fmin=None,
+    #                                         # norm=np.inf,
+    #                                         # threshold=0.0,
+    #                                         # tuning=None,
+    #                                         n_chroma=12,
+    #                                         n_octaves=7,
+    #                                         # window=None,
+    #                                         bins_per_octave=HPCP_SIZE)
+    #                                         cqt_mode='full')
     duration = len(audio)
+
     chroma = []
     if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
         audio = audio[SAMPLE_RATE * 60:]
@@ -120,7 +145,6 @@ def estimate_key(input_audio_file, output_text_file):
     return key
 
 
-
 if __name__ == "__main__":
 
     from time import clock
@@ -154,7 +178,7 @@ if __name__ == "__main__":
         elif os.path.isfile(args.input):
             print("\nAnalysing:\t{0}".format(args.input))
             print("Exporting to:\t{0}.".format(args.output))
-            estimation = estimate_key(args.input, args.output)
+            estimation = get_key(args.input, args.output)
             if args.verbose:
                 print(":\t{0}".format(estimation)),
         else:
@@ -177,7 +201,7 @@ if __name__ == "__main__":
                 if any(soundfile_type in a_file for soundfile_type in VALID_FILE_TYPES):
                     input_file = args.input + '/' + a_file
                     output_file = args.output + '/' + a_file[:-4] + '.txt'
-                    estimation = estimate_key(input_file, output_file)
+                    estimation = get_key(input_file, output_file)
                     if args.verbose:
                         print("{0} - {1}".format(input_file, estimation))
                     count_files += 1

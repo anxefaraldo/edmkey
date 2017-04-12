@@ -5,6 +5,89 @@ import os
 import numpy as np
 from conversions import name_to_class
 
+# def correlation(vector1, mean1, std1, vector2, mean2, std2, shift):
+#     """"This is copied from the Implementation in Essentia"""
+#
+#     r = 0.0
+#     for i in range(len(vector1)):
+#         r += (vector1[i] - mean1) * (vector2[shift] - mean2)
+#         print r
+#     r /= std1 * std2
+#     print r
+#     return r
+#
+# import scipy
+# scipy.stats.pearsonr()
+#
+#
+# def pearsonr(x, y):
+#     # x and y should have same length.
+#     x = np.asarray(x)
+#     y = np.asarray(y)
+#     n = len(x)
+#     mx = x.mean()
+#     my = y.mean()
+#     xm, ym = x - mx, y - my
+#     r_num = np.add.reduce(xm * ym)
+#     r_den = np.sqrt(_sum_of_squares(xm) * _sum_of_squares(ym))
+#     r = r_num / r_den
+#     return r
+#     #
+#     # # Presumably, if abs(r) > 1, then it is only some small artifact of floating
+#     # # point arithmetic.
+#     # r = max(min(r, 1.0), -1.0)
+#     # df = n - 2
+#     # if abs(r) == 1.0:
+#     #     prob = 0.0
+#     # else:
+#     #     t_squared = r ** 2 * (df / ((1.0 - r) * (1.0 + r)))
+#     #     prob = _betai(0.5 * df, 0.5, df / (df + t_squared))
+#     #
+#     # return r, prob
+#
+#
+# def _sum_of_squares(a, axis=0):
+#     """
+#     Squares each element of the input array, and returns the sum(s) of that.
+#     Parameters
+#     ----------
+#     a : array_like
+#         Input array.
+#     axis : int or None, optional
+#         Axis along which to calculate. Default is 0. If None, compute over
+#         the whole array `a`.
+#     Returns
+#     -------
+#     sum_of_squares : ndarray
+#         The sum along the given axis for (a**2).
+#     See also
+#     --------
+#     _square_of_sums : The square(s) of the sum(s) (the opposite of
+#     `_sum_of_squares`).
+#     """
+#     a, axis = _chk_asarray(a, axis)
+#     return np.sum(a * a, axis)
+#
+#
+# def _betai(a, b, x):
+#     x = np.asarray(x)
+#     x = np.where(x < 1.0, x, 1.0)  # if x > 1 then return 1.0
+#     return scipy.special.betainc(a, b, x)
+#
+#
+# def _chk_asarray(a, axis):
+#     if axis is None:
+#         a = np.ravel(a)
+#         outaxis = 0
+#     else:
+#         a = np.asarray(a)
+#         outaxis = axis
+#
+#     if a.ndim == 0:
+#         a = np.atleast_1d(a)
+#
+#     return a, outaxis
+
 
 def normalize_pcp_area(pcp):
     """

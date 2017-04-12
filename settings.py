@@ -11,11 +11,11 @@ RAW_OUTPUT                   = False
 
 # Analysis Parameters
 # -------------------
-HIGHPASS_CUTOFF              = 200
-SPECTRAL_WHITENING           = True
-DETUNING_CORRECTION          = True
+HIGHPASS_CUTOFF              = 0
+SPECTRAL_WHITENING           = False
+DETUNING_CORRECTION          = False
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
-PCP_THRESHOLD                = 0.2
+PCP_THRESHOLD                = 0
 WINDOW_SIZE                  = 4096
 HOP_SIZE                     = 4096
 WINDOW_SHAPE                 = 'hann'
@@ -30,18 +30,18 @@ HPCP_NON_LINEAR              = False
 HPCP_NORMALIZE               = 'none'  # {none, unitSum, unitMax}
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
-HPCP_SIZE                    = 36
+HPCP_SIZE                    = 12
 HPCP_WEIGHT_WINDOW_SEMITONES = 1         # semitones
 HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 
 # Scope and Key Detector Method
 # -----------------------------
 AVOID_TIME_EDGES             = 0         # percentage of track-length not analysed on the edges.
-FIRST_N_SECS                 = 0        # analyse first n seconds of each track (0 = full track)
+FIRST_N_SECS                 = 30        # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
 ANALYSIS_TYPE                = 'global'  # {'local', 'global'}
 N_WINDOWS                    = 100       # if ANALYSIS_TYPE is 'local'
 WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE is 'local'
 KEY_PROFILE                  = 'bmtg'   # {'edma', 'edmm', 'bmtg', 'bmtg-raw'}
-USE_THREE_PROFILES           = True
-WITH_MODAL_DETAILS           = True
+USE_THREE_PROFILES           = False
+WITH_MODAL_DETAILS           = False
