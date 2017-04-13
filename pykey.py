@@ -55,14 +55,13 @@ def get_key(input_audio_file, output_text_file):
                      weightType=HPCP_WEIGHT_TYPE,
                      windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
                      maxShifted=HPCP_SHIFT)
-
     if USE_THREE_PROFILES:
         key_1 = estd.KeyEDM3(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
     else:
         key_1 = estd.KeyEDM(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
     if WITH_MODAL_DETAILS:
         key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
-    if HIGHPASS_CUTOFF == 0:
+    if HIGHPASS_CUTOFF is None:
         ##### audio = loader()
         audio, sr = librosa.load(path=input_audio_file,
                                  sr=SAMPLE_RATE,
@@ -73,12 +72,12 @@ def get_key(input_audio_file, output_text_file):
         ##### hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF, sampleRate=SAMPLE_RATE)
         #####audio = hpf(hpf(hpf(loader())))
         ##### audio, sr = librosa.load(path=input_audio_file, sr=SAMPLE_RATE, mono=True)
-    #chroma_cqt = librosa.feature.chroma_cqt(y=audiol,
+    #chroma_cqt = librosa.feature.chroma_cqt(y=audio,
     #                                         sr=SAMPLE_RATE)
     #                                         C=None,
+        #                                         # norm=np.inf,
     #                                         hop_length=HOP_SIZE,
     #                                         # fmin=None,
-    #                                         # norm=np.inf,
     #                                         # threshold=0.0,
     #                                         # tuning=None,
     #                                         n_chroma=12,
@@ -86,29 +85,23 @@ def get_key(input_audio_file, output_text_file):
     #                                         # window=None,
     #                                         bins_per_octave=HPCP_SIZE)
     #                                         cqt_mode='full')
+
     duration = len(audio)
-    ##### chroma = []
-    #if AVOID_TIME_EDGES > 0:
-    #    initial_sample = (AVOID_TIME_EDGES * duration) / 100
-    #    final_sample = duration - initial_sample
-    #    audio = audio[initial_sample:final_sample]
-    #    duration = len(audio)
     n_slices = duration / HOP_SIZE
     chroma = np.empty([HPCP_SIZE * n_slices, 12], dtype='float32')
+    chroma_lrs = librosa.feature.chroma_stft(y=audio, sr=SAMPLE_RATE, n_fft=WINDOW_SIZE, hop_length=HOP_SIZE, tuning=None)
     for slice_n in range(n_slices):
         spek = rfft(window(cut(audio)))
         p1, p2 = speaks(spek)
         if SPECTRAL_WHITENING:
             p2 = sw(spek, p1, p2)
         pcp = hpcp(p1, p2)
-        if np.sum(pcp) > 0:
+        if pcp.any():
             if not DETUNING_CORRECTION or DETUNING_CORRECTION_SCOPE == 'average':
                 chroma[slice_n] = pcp
-                # np.append(chroma, pcp)
             elif DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'frame':
                 pcp = shift_pcp(pcp, HPCP_SIZE)
                 chroma[slice_n] = pcp
-                ##### chroma.append(pcp)
             else:
                 raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
     if not chroma.any():
@@ -118,7 +111,7 @@ def get_key(input_audio_file, output_text_file):
     if PCP_THRESHOLD != 0:
         chroma = pcp_gate(chroma, PCP_THRESHOLD)
     if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
-        chroma = shift_pcp(chroma, HPCP_SIZE) # before we had to convert 'chroma' to regular list.
+        chroma = shift_pcp(chroma, HPCP_SIZE) # before we had to convert 'chroma_ess' to regular list.
     chroma = essentia.array(chroma) # we keed this to use essentia's Key estimator until we port ours to python
     estimation_1 = key_1(chroma)
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
