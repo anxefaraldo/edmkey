@@ -9,7 +9,7 @@ import essentia
 
 from pcp import *
 from fileutils import *
-from settings import *
+from settings_librosa import *
 
 
 def get_key(input_audio_file, output_text_file):
@@ -25,24 +25,19 @@ def get_key(input_audio_file, output_text_file):
         key_1 = estd.KeyEDM(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
     if WITH_MODAL_DETAILS:
         key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
-    if HIGHPASS_CUTOFF is None:
-        audio, sr = librosa.load(path=input_audio_file,
-                                 sr=SAMPLE_RATE,
-                                 mono=True,
-                                 duration=FIRST_N_SECS_ONLY,
-                                 offset=SKIP_N_SECS_AT_START)
-    else:
-        loader = estd.MonoLoader(filename=input_audio_file, sampleRate=SAMPLE_RATE)
-        hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF, sampleRate=SAMPLE_RATE)
-        audio = hpf(hpf(hpf(loader())))
-    chroma = librosa.feature.chroma_stft(y=audio, sr=SAMPLE_RATE, n_fft=WINDOW_SIZE, hop_length=HOP_SIZE, tuning=None)
+    audio, sr = librosa.load(path=input_audio_file,
+                             sr=SAMPLE_RATE,
+                             duration=FIRST_N_SECS_ONLY,
+                             offset=SKIP_N_SECS_AT_START)
+
+    chroma = librosa.feature.chroma_cqt(y=audio, sr=SAMPLE_RATE)
     chroma = chroma.transpose()
     chroma = np.sum(chroma, axis=0)
     chroma = normalize_pcp_peak(chroma)
     chroma = np.roll(chroma, 3)
     if PCP_THRESHOLD is not None:
         chroma = pcp_gate(chroma, PCP_THRESHOLD)
-    if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
+    if DETUNING_CORRECTION:
         chroma = shift_pcp(chroma, HPCP_SIZE)
     chroma = essentia.array(chroma)
     estimation_1 = key_1(chroma)
