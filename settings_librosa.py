@@ -3,7 +3,6 @@
 # KEY ESTIMATION SETTINGS #
 # ======================= #
 
-
 # File Settings
 # -------------
 SAMPLE_RATE                  = 44100

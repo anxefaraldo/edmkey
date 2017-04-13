@@ -33,9 +33,9 @@ def get_key(input_audio_file, output_text_file):
     chroma = librosa.feature.chroma_cqt(y=audio, sr=SAMPLE_RATE)
     chroma = chroma.transpose()
     chroma = np.sum(chroma, axis=0)
-    chroma = normalize_pcp_peak(chroma)
     chroma = np.roll(chroma, 3)
     if PCP_THRESHOLD is not None:
+        chroma = normalize_pcp_peak(chroma)
         chroma = pcp_gate(chroma, PCP_THRESHOLD)
     if DETUNING_CORRECTION:
         chroma = shift_pcp(chroma, HPCP_SIZE)

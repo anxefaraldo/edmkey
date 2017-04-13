@@ -23,7 +23,7 @@ HIGHPASS_CUTOFF              = 200
 SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
-PCP_THRESHOLD                = 0.2
+PCP_THRESHOLD                = None
 WINDOW_SIZE                  = 4096
 HOP_SIZE                     = 4096
 WINDOW_SHAPE                 = 'hann'
@@ -112,8 +112,8 @@ def estimate_key(input_audio_file, output_text_file):
         else:
             raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
     chroma = np.sum(chroma, axis=0)
-    chroma = normalize_pcp_peak(chroma)
     if PCP_THRESHOLD is not None:
+        chroma = normalize_pcp_peak(chroma)
         chroma = pcp_gate(chroma, PCP_THRESHOLD)
     if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
         chroma = shift_pcp(chroma, HPCP_SIZE)
