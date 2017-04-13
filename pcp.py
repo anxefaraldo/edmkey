@@ -16,30 +16,6 @@ def plot_chroma(chromagram):
     plt.tight_layout()
 
 
-def normalize_pcp_area_np(pcp):
-    """
-    Normalizes a pcp so that the sum of its content is 1,
-    outputting a pcp with up to 3 decimal points.
-    """
-    pcp = np.divide(pcp, np.sum(pcp))
-    new_format = []
-    for item in pcp:
-        new_format.append(round(item, 3))
-    return np.array(new_format)
-
-
-def normalize_pcp_peak_np(pcp):
-    """
-    Normalizes a pcp so that the maximum value is 1,
-    outputting a pcp with up to 3 decimal points.
-    """
-    pcp = np.multiply(pcp, (1 / np.max(pcp)))
-    new_format = []
-    for item in pcp:
-        new_format.append(round(item, 3))
-    return np.array(new_format)
-
-
 def normalize_pcp_area(pcp):
     """
     Normalizes a pcp so that the sum of its content is 1,
@@ -47,9 +23,9 @@ def normalize_pcp_area(pcp):
     """
     pcp = np.divide(pcp, np.sum(pcp))
     new_format = []
-    for item in pcp.tolist():
+    for item in pcp:
         new_format.append(round(item, 3))
-    return new_format
+    return np.array(new_format)
 
 
 def normalize_pcp_peak(pcp):
@@ -59,9 +35,9 @@ def normalize_pcp_peak(pcp):
     """
     pcp = np.multiply(pcp, (1 / np.max(pcp)))
     new_format = []
-    for item in pcp.tolist():
+    for item in pcp:
         new_format.append(round(item, 3))
-    return new_format
+    return np.array(new_format)
 
 
 def shift_pcp(pcp, pcp_size=12):
