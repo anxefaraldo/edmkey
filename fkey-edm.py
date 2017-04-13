@@ -94,7 +94,6 @@ def estimate_key(input_audio_file, output_text_file):
         chroma = pcp_gate(chroma, PCP_THRESHOLD)
     if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
         chroma = shift_pcp(list(chroma), HPCP_SIZE)
-    chroma = chroma.tolist()
     estimation_1 = key_1(chroma)
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
     if WITH_MODAL_DETAILS:
