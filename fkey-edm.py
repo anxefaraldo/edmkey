@@ -59,18 +59,18 @@ def estimate_key(input_audio_file, output_text_file):
         audio = hpf(hpf(hpf(loader())))
     duration = len(audio)
     chroma = []
-    if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
+    if SKIP_N_SECS_AT_START and duration > (SAMPLE_RATE * 60):
         audio = audio[SAMPLE_RATE * 60:]
         duration = len(audio)
-    if FIRST_N_SECS > 0:
-        if duration > (FIRST_N_SECS * SAMPLE_RATE):
-            audio = audio[:FIRST_N_SECS * SAMPLE_RATE]
+    if FIRST_N_SECS_ONLY > 0:
+        if duration > (FIRST_N_SECS_ONLY * SAMPLE_RATE):
+            audio = audio[:FIRST_N_SECS_ONLY * SAMPLE_RATE]
             duration = len(audio)
-    if AVOID_TIME_EDGES > 0:
-        initial_sample = (AVOID_TIME_EDGES * duration) / 100
-        final_sample = duration - initial_sample
-        audio = audio[initial_sample:final_sample]
-        duration = len(audio)
+    # if AVOID_TIME_EDGES > 0:
+    #    initial_sample = (AVOID_TIME_EDGES * duration) / 100
+    #    final_sample = duration - initial_sample
+    #    audio = audio[initial_sample:final_sample]
+    #    duration = len(audio)
     number_of_frames = duration / HOP_SIZE
     for bang in range(number_of_frames):
         spek = rfft(window(cut(audio)))

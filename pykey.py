@@ -10,6 +10,7 @@ import numpy as np
 import scipy.stats
 
 import essentia.standard as estd
+import essentia
 
 from pcp import *
 from fileutils import *
@@ -63,14 +64,18 @@ def get_key(input_audio_file, output_text_file):
         key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
     if HIGHPASS_CUTOFF == 0:
         ##### audio = loader()
-        audio = librosa.load(path=input_audio_file, sr=SAMPLE_RATE)
-    else:
+        audio, sr = librosa.load(path=input_audio_file,
+                                 sr=SAMPLE_RATE,
+                                 mono=True,
+                                 duration=FIRST_N_SECS_ONLY,
+                                 offset=SKIP_N_SECS_AT_START)
+    # else:
         ##### hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF, sampleRate=SAMPLE_RATE)
-        ##### audio = hpf(hpf(hpf(loader())))
-        audio = librosa.load(path=input_audio_file, sr=SAMPLE_RATE)
+        #####audio = hpf(hpf(hpf(loader())))
+        ##### audio, sr = librosa.load(path=input_audio_file, sr=SAMPLE_RATE, mono=True)
     #chroma_cqt = librosa.feature.chroma_cqt(y=audiol,
     #                                         sr=SAMPLE_RATE)
-    #                                             C=None,
+    #                                         C=None,
     #                                         hop_length=HOP_SIZE,
     #                                         # fmin=None,
     #                                         # norm=np.inf,
@@ -82,46 +87,39 @@ def get_key(input_audio_file, output_text_file):
     #                                         bins_per_octave=HPCP_SIZE)
     #                                         cqt_mode='full')
     duration = len(audio)
-    print audio[0]
-    chroma = np.empty(HPCP_SIZE)
-    if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
-        audio = audio[SAMPLE_RATE * 60:]
-        duration = len(audio)
-    if FIRST_N_SECS > 0:
-        if duration > (FIRST_N_SECS * SAMPLE_RATE):
-            audio = audio[:FIRST_N_SECS * SAMPLE_RATE]
-            duration = len(audio)
-    if AVOID_TIME_EDGES > 0:
-        initial_sample = (AVOID_TIME_EDGES * duration) / 100
-        final_sample = duration - initial_sample
-        audio = audio[initial_sample:final_sample]
-        duration = len(audio)
-    number_of_frames = duration / HOP_SIZE
-    for bang in range(number_of_frames):
-        spek = rfft(window(cut(audio[0])))
-        print spek
+    ##### chroma = []
+    #if AVOID_TIME_EDGES > 0:
+    #    initial_sample = (AVOID_TIME_EDGES * duration) / 100
+    #    final_sample = duration - initial_sample
+    #    audio = audio[initial_sample:final_sample]
+    #    duration = len(audio)
+    n_slices = duration / HOP_SIZE
+    chroma = np.empty([HPCP_SIZE * n_slices, 12], dtype='float32')
+    for slice_n in range(n_slices):
+        spek = rfft(window(cut(audio)))
         p1, p2 = speaks(spek)
         if SPECTRAL_WHITENING:
             p2 = sw(spek, p1, p2)
         pcp = hpcp(p1, p2)
         if np.sum(pcp) > 0:
             if not DETUNING_CORRECTION or DETUNING_CORRECTION_SCOPE == 'average':
-                chroma.append(pcp)
+                chroma[slice_n] = pcp
+                # np.append(chroma, pcp)
             elif DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'frame':
                 pcp = shift_pcp(pcp, HPCP_SIZE)
-                chroma.append(pcp)
+                chroma[slice_n] = pcp
+                ##### chroma.append(pcp)
             else:
                 raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
-    if not chroma:
+    if not chroma.any():
         return 'Silence\n'
     chroma = np.sum(chroma, axis=0)
-    print chroma
-    chroma = normalize_pcp_peak(chroma)
+    chroma = normalize_pcp_peak_np(chroma)
     if PCP_THRESHOLD != 0:
         chroma = pcp_gate(chroma, PCP_THRESHOLD)
     if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
-        chroma = shift_pcp(list(chroma), HPCP_SIZE)
-    chroma = chroma.tolist()
+        chroma = shift_pcp(chroma, HPCP_SIZE) # before we had to convert 'chroma' to regular list.
+    chroma = essentia.array(chroma) # we keed this to use essentia's Key estimator until we port ours to python
     estimation_1 = key_1(chroma)
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
     if WITH_MODAL_DETAILS:

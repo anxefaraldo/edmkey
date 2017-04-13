@@ -59,7 +59,7 @@ def estimate_key(soundfile, write_to):
     frame_start = 0
     chroma = []
     keys_1 = []
-    if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
+    if SKIP_FIRST_N_SECS and duration > (SAMPLE_RATE * 60):
         audio = audio[SAMPLE_RATE * 60:]
         duration = len(audio)
     if FIRST_N_SECS > 0:
