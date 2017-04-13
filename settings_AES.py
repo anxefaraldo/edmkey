@@ -1,4 +1,3 @@
-
 # ======================= #
 # KEY ESTIMATION SETTINGS #
 # ======================= #
@@ -28,7 +27,7 @@ HPCP_BAND_PRESET             = False
 HPCP_SPLIT_HZ                = 250       # if HPCP_BAND_PRESET is True
 HPCP_HARMONICS               = 4
 HPCP_NON_LINEAR              = False
-HPCP_NORMALIZE               = 'none'  # {none, unitSum, unitMax}
+HPCP_NORMALIZE               = 'none'    # {none, unitSum, unitMax}
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
 HPCP_SIZE                    = 12
@@ -37,11 +36,11 @@ HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 
 # Scope and Key Detector Method
 # -----------------------------
-FIRST_N_SECS_ONLY            = None  # analyse first n seconds of each track (0 = full track)
+FIRST_N_SECS_ONLY            = None      # analyse first n seconds of each track (0 = full track)
 SKIP_N_SECS_AT_START         = 0
 ANALYSIS_TYPE                = 'global'  # {'local', 'global'}
 N_WINDOWS                    = 100       # if ANALYSIS_TYPE is 'local'
 WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE is 'local'
-KEY_PROFILE                  = 'bmtg'   # {'edma', 'edmm', 'bmtg', 'bmtg-raw'}
-USE_THREE_PROFILES           = False
-WITH_MODAL_DETAILS           = False
+KEY_PROFILE                  = 'bmtg'    # {'edma', 'edmm', 'bmtg', 'bmtg-raw'}
+USE_THREE_PROFILES           = True
+WITH_MODAL_DETAILS           = True

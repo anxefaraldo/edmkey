@@ -8,7 +8,7 @@ import essentia.standard as estd
 
 from pcp import *
 from fileutils import *
-from settings import *
+from settings_AES import *
 
 
 def estimate_key(input_audio_file, output_text_file):
