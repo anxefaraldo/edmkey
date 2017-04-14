@@ -1,3 +1,0 @@
-0.000	Silence
-1.750	C#:modal
-305.070	Silence
