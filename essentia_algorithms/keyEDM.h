@@ -47,7 +47,7 @@ class KeyEDM : public Algorithm {
   }
 
   void declareParameters() {
-    declareParameter("profileType", "the type of polyphic profile to use for correlation calculation", "{edma,edmm,bmtg-raw,bmtg}", "bmtg");
+    declareParameter("profileType", "the type of polyphic profile to use for correlation calculation", "{bgate,braw,edma,edmm}", "bgate");
     declareParameter("pcpSize", "number of array elements used to represent a semitone times 12 (this parameter is only a hint, during computation, the size of the input PCP is used instead)", "[12,inf)", 36);
   }
 
@@ -110,7 +110,7 @@ class KeyEDM : public AlgorithmComposite {
   ~KeyEDM();
 
   void declareParameters() {
-    declareParameter("profileType", "the type of polyphohic profile to use for correlation calculation", "{edma,edmm,bmtg-raw,bmtg}", "bmtg");
+    declareParameter("profileType", "the type of polyphohic profile to use for correlation calculation", "{bgate,braw,edma,edmm}", "bgate");
     declareParameter("pcpSize", "number of array elements used to represent a semitone times 12 (this parameter is only a hint, during computation, the size of the input PCP is used instead)", "[12,inf)", 36);
   }
 

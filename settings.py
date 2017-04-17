@@ -42,6 +42,6 @@ SKIP_N_SECS_AT_START         = 0
 ANALYSIS_TYPE                = 'global'  # {'local', 'global'}
 N_WINDOWS                    = 100       # if ANALYSIS_TYPE is 'local'
 WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE is 'local'
-KEY_PROFILE                  = 'bmtg'   # {'edma', 'edmm', 'bmtg', 'bmtg-raw'}
+KEY_PROFILE                  = 'bgate'   # {'bgate', 'braw', 'edma', 'edmm'}
 USE_THREE_PROFILES           = False
 WITH_MODAL_DETAILS           = False
