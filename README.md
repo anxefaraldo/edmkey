@@ -1,11 +1,8 @@
 # edmkey
 
-Python scripts for automatic key detection in EDM
+Python script for automatic key detection in EDM
 
-This repository provides scripts for key detection and its evaluation.
-It also contains a program to automatically extract key-profiles from a corpus.
-They are based on a fork of MTG's Music Information Retrieval Library "Essentia"
-which can be downloaded from the following link:
+This repository provides scripts for key detection and its evaluation. They are based on a fork of MTG's Music Information Retrieval Library "Essentia" which can be downloaded from the following link:
 
 https://github.com/angelfaraldo/essentia
 
