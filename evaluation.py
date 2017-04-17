@@ -36,6 +36,18 @@ def matrix_to_excel(my_matrix,
     wb.save(filename)
 
 
+def merge_files(dir_with_files, new_filename):
+    o = open(new_filename, 'w')
+    e = os.listdir(dir_with_files)
+    for item in e:
+        if '.key' in item:
+            f = open(dir_with_files + '/' + item, 'r')
+            l = f.read()
+            o.write(l + '\n')
+            f.close()
+    o.close()
+
+
 def name_to_class(key):
     """
     Converts a note name to its pitch-class value.
