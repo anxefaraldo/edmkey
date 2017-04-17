@@ -1,270 +1,133 @@
-#
-# char * keyNames[] = {"A", "Bb", "B", "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab"};
-# _keys = arrayToVector < string > (keyNames)
-#
-# profileTypes[][12] = {
-#
-# {1.0000, 0.2875, 0.5020, 0.4048, 0.6050, 0.5614, 0.3205, 0.7966, 0.3159, 0.4506, 0.4202, 0.3889}, // edma, [2]
-# {1.0000, 0.3096, 0.4415, 0.5827, 0.3262, 0.4948, 0.2889, 0.7804, 0.4328, 0.2903, 0.5331, 0.3217},
-#
-# {1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000}, // edmm, [2]
-# {1.0000, 0.2321, 0.4415, 0.6962, 0.3262, 0.4948, 0.2889, 0.7804, 0.4328, 0.2903, 0.5331, 0.3217},
-#
-# {1.0000, 0.1573, 0.4200, 0.1570, 0.5296, 0.3669, 0.1632, 0.7711, 0.1676, 0.3827, 0.2113, 0.2965}, // bmtg - raw
-# {1.0000, 0.2330, 0.3615, 0.3905, 0.2925, 0.3777, 0.1961, 0.7425, 0.2701, 0.2161, 0.4228, 0.2272},
-#
-# {1.00, 0.00, 0.42, 0.00, 0.53, 0.37, 0.00, 0.77, 0.00, 0.38, 0.21, 0.30}, // bmtg
-# {1.00, 0.00, 0.36, 0.39, 0.00, 0.38, 0.00, 0.74, 0.27, 0.00, 0.42, 0.23]
-#
-# # define SET_PROFILE(i) _M = arrayToVector<Real>(profileTypes[2*i]); _m = arrayToVector<Real>(profileTypes[2*i+1])
-#
-# if (_profileType == "edma")     {SET_PROFILE(0);}
-# else if (_profileType == "edmm")     {SET_PROFILE(1);}
-# else if (_profileType == "bmtg-raw") {SET_PROFILE(2);}
-# else if (_profileType == "bmtg")     {SET_PROFILE(3);}
-# else {
-# throw EssentiaException("KeyEDM: Unsupported profile type: ", _profileType);
-# }
-#
-# resize(parameter("pcpSize").toInt());
-# }
-#
-#
-# void KeyEDM::
-#     compute()
-# {
-#
-#     const
-# vector < Real > & pcp = _pcp.get();
-#
-# int
-# pcpsize = (int)
-# pcp.size();
-# int
-# n = pcpsize / 12;
-#
-# if (pcpsize < 12 | | pcpsize % 12 != 0)
-# throw
-# EssentiaException("KeyEDM: input PCP size is not a positive multiple of 12");
-#
-# if (pcpsize != (int)
-# _profile_dom.size()) {
-#     resize(pcpsize);
-# }
-#
-# // Compute
-# Correlation
-# // Means
-# Real
-# mean_pcp = mean(pcp);
-# Real
-# std_pcp = 0;
-#
-# // Standard
-# Deviations
-# for (int i=0; i < pcpsize; i++)
-# std_pcp += (pcp[i] - mean_pcp) * (pcp[i] - mean_pcp);
-# std_pcp = sqrt(std_pcp);
-#
-# // Correlation Matrix
-# int keyIndex = -1; // index of the first maximum
-# Real max = -1; // first maximum
-# Real max2 = -1; // second maximum
-# int scale = MAJOR; // scale
-#
-# // Compute maximum for both major and minor
-# Real maxMaj = -1;
-# Real max2Maj = -1;
-# int keyIndexMaj = -1;
-#
-# Real maxMin = -1;
-# Real max2Min = -1;
-# int keyIndexMin = -1;
-#
-# // calculate the correlation between the profiles and the PCP...
-# // we shift the profile around to find the best match
-# for (int shift=0; shift < pcpsize; shift++) {
-# Real corrMajor = correlation(pcp, mean_pcp, std_pcp, _profile_doM, _mean_profile_M, _std_profile_M, shift);
-# // Compute maximum value for major keys
-# if (corrMajor > maxMaj) {
-# max2Maj = maxMaj;
-# maxMaj = corrMajor;
-# keyIndexMaj = shift;
-# }
-#
-# Real corrMinor = correlation(pcp, mean_pcp, std_pcp, _profile_dom, _mean_profile_m, _std_profile_m, shift);
-# // Compute maximum value for minor keys
-# if (corrMinor > maxMin) {
-# max2Min = maxMin;
-# maxMin = corrMinor;
-# keyIndexMin = shift;
-# }
-# }
-#
-# if (maxMaj >= maxMin) {
-# keyIndex = (int) (keyIndexMaj * 12 / pcpsize + .5);
-# scale = MAJOR;
-# max = maxMaj;
-# max2 = max2Maj;
-# }
-# else {
-# keyIndex = (int) (keyIndexMin * 12 / pcpsize + .5);
-# scale = MINOR;
-# max = maxMin;
-# max2 = max2Min;
-# }
-#
-# if (keyIndex < 0) {
-# throw EssentiaException("KeyEDM: keyIndex smaller than zero. Could not find key.");
-# }
-#
-# // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-# // Here we calculate the outputs...
-# // first three outputs are key, scale and strength
-# _key.get() = _keys[keyIndex];
-# _scale.get() = scale == MAJOR ? "major": "minor";
-# _strength.get() = max;
-#
-# //
-# this
-# one
-# outputs
-# the
-# relative
-# difference
-# between
-# the
-# maximum and the
-#             // second
-# highest
-# maximum(i.e.Compute
-# second
-# highest
-# correlation
-# peak)
-# _firstToSecondRelativeStrength.get() = (max - max2) / max;
-#
-# }
-#
-# // this
-# function
-# resizes and interpolates
-# the
-# profiles
-# to
-# fit
-# the
-# // pcp
-# size...
-#     void
-# KeyEDM::resize(int
-# pcpsize) {
-#          // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // /
-#          // Interpolate
-# to
-# get
-# pcpsize
-# values
-# int
-# n = pcpsize / 12;
-#
-# _profile_doM.resize(pcpsize);
-# _profile_dom.resize(pcpsize);
-#
-# for (int
-# i = 0;
-# i < 12;
-# i + +) {
-#
-#     _profile_doM[i * n] = _M[i];
-# _profile_dom[i * n] = _m[i];
-#
-# // Two
-# interpolated
-# values
-# Real
-# incr_M, incr_m;
-# if (i == 11)
-# {
-#     incr_M = (_M[11] - _M[0]) / n;
-# incr_m = (_m[11] - _m[0]) / n;
-# }
-# else {
-#     incr_M = (_M[i] - _M[i + 1]) / n;
-# incr_m = (_m[i] - _m[i + 1]) / n;
-# }
-#
-# for (int j=1; j <= (n-1); j++) {
-# _profile_doM[i * n+j] = _M[i] - j * incr_M;
-# _profile_dom[i * n+j] = _m[i] - j * incr_m;
-# }
-# }
-#
-# _mean_profile_M = mean(_profile_doM);
-# _mean_profile_m = mean(_profile_dom);
-# _std_profile_M = 0;
-# _std_profile_m = 0;
-#
-# // Compute Standard Deviations
-# for (int i=0; i < pcpsize; i++) {
-# _std_profile_M += (_profile_doM[i] - _mean_profile_M) * (_profile_doM[i] - _mean_profile_M);
-# _std_profile_m += (_profile_dom[i] - _mean_profile_m) * (_profile_dom[i] - _mean_profile_m);
-# }
-# _std_profile_M = sqrt(_std_profile_M);
-# _std_profile_m = sqrt(_std_profile_m);
-# }
-#
-# // correlation coefficient with 'shift'
-# // on of the vectors is shifted in time, and then the correlation is calculated,
-# // just like a cross-correlation
-# Real KeyEDM::
-#     correlation(const
-# vector < Real > & v1, const
-# Real
-# mean1, const
-# Real
-# std1, const
-# vector < Real > & v2, const
-# Real
-# mean2, const
-# Real
-# std2, const
-# int
-# shift) const
-# {
-#     Real
-# r = 0.0;
-# int
-# size = (int)
-# v1.size();
-#
-# for (int
-# i = 0;
-# i < size;
-# i + +)
-# {
-#     int
-# index = (i - shift) % size;
-#
-# if (index < 0)
-# {
-#     index += size;
-# }
-#
-# r += (v1[i] - mean1) * (v2[index] - mean2);
-# }
-#
-# r /= std1 * std2;
-#
-# return r;
-# }
-#
-#
-# _keyEDMAlgo->configure("profileType", "edma");
-# _keyEDMAlgo->input("pcp").set(hpcpAverage);
-# _keyEDMAlgo->output("key").set(key);
-# _keyEDMAlgo->output("scale").set(scale);
-# _keyEDMAlgo->output("strength").set(strength);
-# _keyEDMAlgo->output("firstToSecondRelativeStrength").set(firstToSecondRelativeStrength);
-# _keyEDMAlgo->compute();
-#
+# coding=utf-8
+import numpy as np
+from scipy.stats import pearsonr
+
+# Essentia's algorithm had a function to resize pcp's to fit the key profiles
+# consider implementing this in the future
+
+# podríamos generar perfiles que, una vez extraídas sus características modales,
+# maximicen la diferencia entre ellos
+
+# input values
+
+# pcp = np.random.rand(12)
+# profile_type = "bgate"
+
+######################################
+
+# it is going to be sensible as to whether we start counting on A or on C... I would suggest C, thoguh
+
+key_names = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
+
+key_templates = {'bgate': np.array([[1., 0.00, 0.42, 0.00, 0.53, 0.37, 0.00, 0.77, 0.00, 0.38, 0.21, 0.30],
+                                    [1., 0.00, 0.36, 0.39, 0.00, 0.38, 0.00, 0.74, 0.27, 0.00, 0.42, 0.23]]),
+
+                 'braw': np.array([[1., 0.1573, 0.4200, 0.1570, 0.5296, 0.3669, 0.1632, 0.7711, 0.1676, 0.3827, 0.2113, 0.2965],
+                                   [1., 0.2330, 0.3615, 0.3905, 0.2925, 0.3777, 0.1961, 0.7425, 0.2701, 0.2161, 0.4228, 0.2272]]),
+
+                 'diatonic': np.array([[1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1],
+                                      [1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1]]),
+
+                 'monotonic': np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                        [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]]),
+
+                 'triads': np.array([[1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+                                     [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0]]),
+
+                 'edma':  np.array([[1., 0.2875, 0.5020, 0.4048, 0.6050, 0.5614, 0.3205, 0.7966, 0.3159, 0.4506, 0.4202, 0.3889],
+                                    [1., 0.3096, 0.4415, 0.5827, 0.3262, 0.4948, 0.2889, 0.7804, 0.4328, 0.2903, 0.5331, 0.3217]]),
+
+                 'edmm':  np.array([[1., 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000],
+                                    [1., 0.2321, 0.4415, 0.6962, 0.3262, 0.4948, 0.2889, 0.7804, 0.4328, 0.2903, 0.5331, 0.3217]]),
+
+                 'krumhansl': np.array([[6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88],
+                                        [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17]]),
+
+                 'temperley99': np.array([[5.0, 2.0, 3.5, 2.0, 4.5, 4.0, 2.0, 4.5, 2.0, 3.5, 1.5, 4.0],
+                                          [5.0, 2.0, 3.5, 4.5, 2.0, 4.0, 2.0, 4.5, 3.5, 2.0, 1.5, 4.0]]),
+
+                 'temperley05': np.array([[0.748, 0.060, 0.488, 0.082, 0.67, 0.46, 0.096, 0.715, 0.104, 0.366, 0.057, 0.4],
+                                          [0.712, 0.084, 0.474, 0.618, 0.049, 0.46, 0.105, 0.747, 0.404, 0.067, 0.133, 0.33]]),
+
+                 'temperley-essen': np.array([[0.184, 0.001, 0.155, 0.003, 0.191, 0.109, 0.005, 0.214, 0.001, 0.078, 0.004, 0.055],
+                                              [0.192, 0.005, 0.149, 0.179, 0.002, 0.144, 0.002, 0.201, 0.038, 0.012, 0.053, 0.022]]),
+
+                 'thpcp': np.array([[0.95162, 0.20742, 0.71758, 0.22007, 0.71341, 0.48841, 0.31431, 1.00000, 0.20957, 0.53657, 0.22585, 0.55363],
+                                    [0.94409, 0.21742, 0.64525, 0.63229, 0.27897, 0.57709, 0.26428, 1.0000, 0.26428, 0.30633, 0.45924, 0.35929]]),
+
+                 'shaath': np.array([[6.6, 2.0, 3.5, 2.3, 4.6, 4.0, 2.5, 5.2, 2.4, 3.7, 2.3, 3.4],
+                                     [6.5, 2.7, 3.5, 5.4, 2.6, 3.5, 2.5, 5.2, 4.0, 2.7, 4.3, 3.2]]),
+
+                 'gomez': np.array([[0.82, 0.00, 0.55, 0.00, 0.53, 0.30, 0.08, 1.00, 0.00, 0.38, 0.00, 0.47],
+                                    [0.81, 0.00, 0.53, 0.54, 0.00, 0.27, 0.07, 1.00, 0.27, 0.07, 0.10, 0.36]]),
+
+                 'noland': np.array([[0.0629, 0.0146, 0.061, 0.0121, 0.0623, 0.0414, 0.0248, 0.0631, 0.015, 0.0521, 0.0142, 0.0478],
+                                     [0.0682, 0.0138, 0.0543, 0.0519, 0.0234, 0.0544, 0.0176, 0.067, 0.0349, 0.0297, 0.0401, 0.027]])
+                 }
+
+
+# def select_profile_type(profile_name='bgate'):
+#     try:
+#         return key_templates[profile_name]
+#     except KeyError:
+#         print("KeyError: Unsupported profile type: {}".format(profile_name))
+#         print("valid profiles are {}".format(key_templates.keys()))
+
+
+def template_matching(pcp, profile_type='bgate'):
+
+    if (pcp.size < 12) or (pcp.size % 12 != 0):
+        raise IndexError("Input PCP size is not a positive multiple of 12")
+
+    def _select_profile_type(profile):
+        try:
+            return key_templates[profile]
+        except KeyError:
+            print("KeyError: Unsupported profile type: {}".format(profile))
+            print("valid profiles are {}".format(key_templates.keys()))
+
+    _major, _minor = _select_profile_type(profile_type)
+
+    # INITIALIZE THE CORRELATION MATRIX
+    # =================================
+    first_max_major = -1
+    second_max_major = -1
+    key_index_major = -1
+
+    first_max_minor = -1
+    second_max_minor = -1
+    key_index_minor = -1
+
+
+    for shift in np.arange(pcp.size):
+        correlation_major = (pearsonr(pcp, np.roll(_major, shift)))[0]
+        if correlation_major > first_max_major:
+            second_max_major = first_max_major
+            first_max_major = correlation_major
+            key_index_major = shift
+
+        correlation_minor = (pearsonr(pcp, np.roll(_minor, shift)))[0]
+        if correlation_minor > first_max_minor:
+            second_max_minor = first_max_minor
+            first_max_minor = correlation_minor
+            key_index_minor = shift
+
+
+    if first_max_major >= first_max_minor:
+        key_index = key_index_major
+        # key_index = (key_index_major * 12) / (pcp.size + 0.5)
+        scale = 'major'
+        first_max = first_max_major
+        second_max = second_max_major
+    else:
+        # key_index = (key_index_minor * 12) / (pcp.size + 0.5)
+        key_index = key_index_minor
+        scale = 'minor'
+        first_max = first_max_minor
+        second_max = second_max_minor
+
+    if key_index < 0:
+        raise IndexError("key_index smaller than zero. Could not find key.")
+    else:
+        first_to_second_ratio = (first_max - second_max) / first_max
+        return key_names[int(key_index)], scale, first_max, first_to_second_ratio
