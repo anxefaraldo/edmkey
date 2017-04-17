@@ -12,7 +12,7 @@ RAW_OUTPUT                   = False
 
 # Analysis Parameters
 # -------------------
-HIGHPASS_CUTOFF              = 0
+HIGHPASS_CUTOFF              = None
 SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}

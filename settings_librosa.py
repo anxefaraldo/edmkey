@@ -10,7 +10,7 @@ VALID_FILE_TYPES             = {'.wav', '.mp3', 'flac', '.aiff', '.ogg'}
 
 # Analysis Parameters
 # -------------------
-DETUNING_CORRECTION          = True
+DETUNING_CORRECTION          = False
 PCP_THRESHOLD                = 0.2
 WINDOW_SIZE                  = 4096
 HOP_SIZE                     = 4096
