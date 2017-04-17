@@ -44,7 +44,7 @@ HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 
 # Key Detector Method
 # -------------------
-KEY_PROFILE                  = 'bmtg'    # {'edma', 'edmm', 'bmtg', 'bmtg-raw'}
+KEY_PROFILE = 'bgate'  # {'bgate', 'braw', 'edma', 'edmm'}
 USE_THREE_PROFILES           = True
 WITH_MODAL_DETAILS           = True
 
