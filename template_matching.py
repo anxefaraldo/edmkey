@@ -8,16 +8,9 @@ from scipy.stats import pearsonr
 # podríamos generar perfiles que, una vez extraídas sus características modales,
 # maximicen la diferencia entre ellos
 
-# input values
-
-# pcp = np.random.rand(12)
-# profile_type = "bgate"
-
-######################################
-
 # it is going to be sensible as to whether we start counting on A or on C... I would suggest C, thoguh
-
-key_names = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
+#key_names = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
+key_names = ["A", "Bb", "B", "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab"]
 
 key_templates = {'bgate': np.array([[1., 0.00, 0.42, 0.00, 0.53, 0.37, 0.00, 0.77, 0.00, 0.38, 0.21, 0.30],
                                     [1., 0.00, 0.36, 0.39, 0.00, 0.38, 0.00, 0.74, 0.27, 0.00, 0.42, 0.23]]),
@@ -66,14 +59,6 @@ key_templates = {'bgate': np.array([[1., 0.00, 0.42, 0.00, 0.53, 0.37, 0.00, 0.7
                  }
 
 
-# def select_profile_type(profile_name='bgate'):
-#     try:
-#         return key_templates[profile_name]
-#     except KeyError:
-#         print("KeyError: Unsupported profile type: {}".format(profile_name))
-#         print("valid profiles are {}".format(key_templates.keys()))
-
-
 def template_matching(pcp, profile_type='bgate'):
 
     if (pcp.size < 12) or (pcp.size % 12 != 0):
@@ -88,15 +73,13 @@ def template_matching(pcp, profile_type='bgate'):
 
     _major, _minor = _select_profile_type(profile_type)
 
-    # INITIALIZE THE CORRELATION MATRIX
-    # =================================
-    first_max_major = -1
+    first_max_major  = -1
     second_max_major = -1
-    key_index_major = -1
+    key_index_major  = -1
 
-    first_max_minor = -1
+    first_max_minor  = -1
     second_max_minor = -1
-    key_index_minor = -1
+    key_index_minor  = -1
 
 
     for shift in np.arange(pcp.size):
