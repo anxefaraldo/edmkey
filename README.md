@@ -1,4 +1,4 @@
-## fkey (MIREX 16 submission)
+## fkey-edm (MIREX 16 submission)
 
 Algorithm for automatic key detection in EDM.
 
@@ -7,8 +7,14 @@ Algorithm for automatic key detection in EDM.
 In order to run or compile the algorithm you need.
 
 - Python >= 2.6
-- Numpy  >= 
+- Numpy >= 
 - Essentia (http://essentia.upf.edu/)
+
+We are actually using our own fork of essentia, which you can find here:
+
+*https://github.com/angelfaraldo/essentia*
+
+However, if you just prefer to use the latest essentia-master, you can copy the files in the "essentia" folder in this repository onto "/essentia/src/algorithms/tonal" and then build and compile. They are exclusive algorithms and will not overwrite any of the default ones.
 
 Detailed instructions to build essentia can be found on the essentia site:
 
@@ -20,13 +26,13 @@ The script can be compiled onto an executable using pyinstaller. You can install
 
 $ pip install pyinstaller
 
-and then, in the fkey folder, generate the executable with the following command:
+and then, in the fkey-edm folder, generate the executable with the following command:
 
-$ pyinstaller fkey.py
+$ pyinstaller fkey-edm.py
 
-The new fkey executable will be located in './dist/fkey'
+The new fkey-edm executable will be located in './dist/fkey-edm'
+
 
 ### Extras
 
 Additionally, we provide a simple python script to evaluate the results of the algorithm according to the MIREX competition.
-

@@ -17,42 +17,42 @@ VALID_FILE_TYPES             = {'.wav', '.mp3', 'flac', '.aiff', '.ogg'}
 
 # Analysis Parameters
 # -------------------
+HIGHPASS_CUTOFF              = 200
 SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
+PCP_THRESHOLD                = 0.66       # set to 0 to bypass parameter
 WINDOW_SIZE                  = 4096
-HOP_SIZE                     = WINDOW_SIZE
+HOP_SIZE                     = 4096
 WINDOW_SHAPE                 = 'hann'
 MIN_HZ                       = 25
 MAX_HZ                       = 3500
 SPECTRAL_PEAKS_THRESHOLD     = 0.0001
 SPECTRAL_PEAKS_MAX           = 60
 HPCP_BAND_PRESET             = False
-HPCP_SPLIT_HZ                = 250  # if HPCP_BAND_PRESET is True
+HPCP_SPLIT_HZ                = 250       # if HPCP_BAND_PRESET is True
 HPCP_HARMONICS               = 4
 HPCP_NON_LINEAR              = True
 HPCP_NORMALIZE               = True
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
 HPCP_SIZE                    = 36
-HPCP_WEIGHT_WINDOW_SEMITONES = 1  # semitones
-HPCP_WEIGHT_TYPE             = 'squaredCosine'  # {'none', 'cosine', 'squaredCosine'}
+HPCP_WEIGHT_WINDOW_SEMITONES = 1         # semitones
+HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 
 # Scope and Key Detector Method
 # -----------------------------
-AVOID_TIME_EDGES             = 0  # % of track-length not analysed on the edges.
-FIRST_N_SECS                 = 0  # analyse first n seconds of each track (0 = full track)
+AVOID_TIME_EDGES             = 0          # percentage of track-length not analysed on the edges.
+FIRST_N_SECS                 = 0         # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
-KEY_PROFILE                  = 'temperley'
-KEY_USE_THREE_CHORDS         = False
-KEY_USE_POLYPHONY            = False
-KEY_N_HARMONICS              = 15  # if use_polyphony is True
-KEY_SLOPE                    = 0.2  # if use_polyphony is True
+KEY_PROFILE                  = 'edma'    # {'edma', 'edmm', 'braw', 'bgate'}
+USE_THREE_PROFILES           = False
+WITH_MODAL_DETAILS           = False
+
 
 # ===================== #
 # FUNCTION DECLARATIONS #
 # ===================== #
-
 
 def results_directory(out_dir):
     """
@@ -90,6 +90,16 @@ def shift_pcp(pcp, pcp_size=12):
     return pcp
 
 
+def pcp_gate(pcp, threshold):
+    """
+    Zeroes vector elements with values under a certain threshold.
+    """
+    for i in range(len(pcp)):
+        if pcp[i] < threshold:
+            pcp[i] = 0
+    return pcp
+
+
 def estimate_key(input_audio_file, output_text_file):
     """
     This function estimates the overall key of an audio track
@@ -101,8 +111,11 @@ def estimate_key(input_audio_file, output_text_file):
                              sampleRate=SAMPLE_RATE)
     cut = estd.FrameCutter(frameSize=WINDOW_SIZE,
                            hopSize=HOP_SIZE)
+    hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF,
+                        sampleRate=SAMPLE_RATE)
     window = estd.Windowing(size=WINDOW_SIZE,
-                            type=WINDOW_SHAPE)
+                            type=WINDOW_SHAPE,
+                            zeroPhase=False)
     rfft = estd.Spectrum(size=WINDOW_SIZE)
     sw = estd.SpectralWhitening(maxFrequency=MAX_HZ,
                                 sampleRate=SAMPLE_RATE)
@@ -124,13 +137,13 @@ def estimate_key(input_audio_file, output_text_file):
                      weightType=HPCP_WEIGHT_TYPE,
                      windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
                      maxShifted=HPCP_SHIFT)
-    key = estd.Key(pcpSize=HPCP_SIZE,
-                   profileType=KEY_PROFILE,
-                   numHarmonics=KEY_N_HARMONICS,
-                   slope=KEY_SLOPE,
-                   usePolyphony=KEY_USE_POLYPHONY,
-                   useThreeChords=KEY_USE_THREE_CHORDS)
-    audio = loader()
+    if USE_THREE_PROFILES:
+        key_1 = estd.KeyEDM3(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
+    else:
+        key_1 = estd.KeyEDM(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
+    if WITH_MODAL_DETAILS:
+        key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
+    audio = hpf(hpf(hpf(loader())))
     duration = len(audio)
     chroma = []
     if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
@@ -152,6 +165,7 @@ def estimate_key(input_audio_file, output_text_file):
         if SPECTRAL_WHITENING:
             p2 = sw(spek, p1, p2)
         pcp = hpcp(p1, p2)
+        pcp = pcp_gate(pcp, PCP_THRESHOLD)
         sum_pcp = np.sum(pcp)
         if sum_pcp > 0:
             if not DETUNING_CORRECTION or DETUNING_CORRECTION_SCOPE == 'average':
@@ -166,8 +180,22 @@ def estimate_key(input_audio_file, output_text_file):
     chroma = np.sum(chroma, axis=0)
     if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
         chroma = shift_pcp(list(chroma), HPCP_SIZE)
-    key = key(chroma.tolist())
-    key = key[0] + '\t' + key[1]
+    chroma = chroma.tolist()
+    estimation_1 = key_1(chroma)
+    key_1 = estimation_1[0] + '\t' + estimation_1[1]
+    if WITH_MODAL_DETAILS:
+        estimation_2 = key_2(chroma)
+        key_2 = estimation_2[0] + '\t' + estimation_2[1]
+    if WITH_MODAL_DETAILS:
+        key_verbose = key_1 + '\t' + key_2
+        key = key_verbose.split('\t')
+        # SIMPLE RULES BASED ON THE MULTIPLE ESTIMATIONS TO IMPROVE THE RESULTS:
+        if key[3] == 'monotonic' and key[0] == key[2]:
+            key = '{0}\tminor'.format(key[0])
+        else:
+            key = "{0}\t{1}".format(key[0], key[1])
+    else:
+        key = key_1
     textfile = open(output_text_file, 'w')
     textfile.write(key + '\n')
     textfile.close()
@@ -214,7 +242,7 @@ if __name__ == "__main__":
                 print "\nWARNING:"
                 print "It seems that you are trying to write onto an existing file"
                 print "In batch_mode, the output argument must be a directory".format(args.output)
-                print "Type 'FkeyEDM -h' for help\n"
+                print "Type 'Fkey3 -h' for help\n"
                 sys.exit()
             output_dir = results_directory(args.output)
             list_all_files = os.listdir(args.input)
