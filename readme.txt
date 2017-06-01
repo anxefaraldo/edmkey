@@ -3,6 +3,7 @@
 =================================================
 
 Algorithm name: fkey-edm
+		fkey
     
 Authors:        Ángel Faraldo, Sergi Jordà, Perfecto Herrera. 
 
@@ -33,31 +34,35 @@ hesitate to contact us.
 STEPS PRIOR TO RUNNING THE ALGORITHM:
 ====================================
 
-1) If you do not have the file "fkey-edm.zip", you can download it 
-   from <http://www.github.com/angelfaraldo/edmkey/tree/fkey-edm>
+1) If you do not have the file "MIREX2016.zip", you can download it 
+   from <http://www.github.com/angelfaraldo/edmkey/tree/MIREX2016>
 
 2) Once you have the zip file, you can move it to a convenient
    location and extract its contents.
    
-3) Last, access the fkey-edm directory.
+3) Last, access the MIREX2016 directory.
 
 
-    $ mv '/home/user/Downloads/fkey-edm.zip' '/home/user/fkey-edm.zip'
+    $ mv '/home/user/Downloads/MIREX2016' '/home/user/MIREX2016.zip'
     $ cd ~
-    $ unzip fkey-edm.zip
-    $ cd fkey-edm
+    $ unzip MIREX2016.zip
+    $ cd MIREX2016
 
 
 RUNNING THE ALGORITHM:
 =====================
 
 For a regular, file by file analysis, as advised in the MIREX 2016 Wiki, 
-once in the fkey-edm folder, you should type the following line (where 
+once in the MIREX2016 folder, you should type the following line (where 
 %input is the full path to an audio file and %output is the full path of a
 textfile that will be created with the key estimation):
 
 
     $ ./fkey-edm %input %output
+
+or
+  
+  $ ./fkey %input %output
 
 
 However, if you have all your audio files on a single directory, you can call
