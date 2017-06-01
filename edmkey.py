@@ -192,10 +192,13 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--verbose",
                         action="store_true",
                         help="print progress to console")
-    parser.add_argument("-p", "--specify a key profile",
+    parser.add_argument("-p", "--profile",
                         help="specify a key template (temperley, shaat, edma, edmm). Defaults to edma")
     args = parser.parse_args()
 
+    if args.profile:
+        KEY_PROFILE = args.profile
+        print KEY_PROFILE
     if not args.batch_mode:
         if not os.path.isfile(args.input):
             print "\nWARNING:"

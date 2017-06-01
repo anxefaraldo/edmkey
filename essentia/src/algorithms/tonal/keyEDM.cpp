@@ -52,30 +52,27 @@ void KeyEDM::configure() {
   _keys = arrayToVector<string>(keyNames);
 
   Real profileTypes[][12] = {
-
-//    I       bII     II      bIII    III     IV      #IV     V       bVI     VI      bVII    VII    
-    { 1.00  , 0.00  , 0.42  , 0.00  , 0.53  , 0.37  , 0.00  , 0.77  , 0.00  , 0.38,   0.21  , 0.30   }, // bgate
-    { 1.00  , 0.00  , 0.36  , 0.39  , 0.00  , 0.38  , 0.00  , 0.74  , 0.27  , 0.00  , 0.42  , 0.23   },
-
-    { 1.0000, 0.1573, 0.4200, 0.1570, 0.5296, 0.3669, 0.1632, 0.7711, 0.1676, 0.3827, 0.2113, 0.2965 }, // braw
-    { 1.0000, 0.2330, 0.3615, 0.3905, 0.2925, 0.3777, 0.1961, 0.7425, 0.2701, 0.2161, 0.4228, 0.2272 },
-
+    
+    { 5.0, 2.0, 3.5, 2.0, 4.5, 4.0, 2.0, 4.5, 2.0, 3.5, 1.5, 4.0 }, // A revised version of the key profiles, by David Temperley, see [2]
+    { 5.0, 2.0, 3.5, 4.5, 2.0, 4.0, 2.0, 4.5, 3.5, 2.0, 1.5, 4.0 },
+    
+    { 6.6, 2.0, 3.5, 2.3, 4.6, 4.0, 2.5, 5.2, 2.4, 3.7, 2.3, 3.4 }, // Shaath
+    { 6.5, 2.7, 3.5, 5.4, 2.6, 3.5, 2.5, 5.2, 4.0, 2.7, 4.3, 3.2 },
     
     { 1.0000, 0.2875, 0.5020, 0.4048, 0.6050, 0.5614, 0.3205, 0.7966, 0.3159, 0.4506, 0.4202, 0.3889 }, // edma, [2]
     { 1.0000, 0.3096, 0.4415, 0.5827, 0.3262, 0.4948, 0.2889, 0.7804, 0.4328, 0.2903, 0.5331, 0.3217 },
 
     { 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000 }, // edmm, [2]
     { 1.0000, 0.2321, 0.4415, 0.6962, 0.3262, 0.4948, 0.2889, 0.7804, 0.4328, 0.2903, 0.5331, 0.3217 }
-//    I       bII     II      bIII    III     IV      #IV     V       bVI     VI      bVII    VII
 
 };
 
 #define SET_PROFILE(i) _M = arrayToVector<Real>(profileTypes[2*i]); _m = arrayToVector<Real>(profileTypes[2*i+1])
 
-  if      (_profileType == "bgate")     { SET_PROFILE(0);  }
-  else if (_profileType == "braw")     { SET_PROFILE(1);  }
-  else if (_profileType == "edma")     { SET_PROFILE(2);  }
-  else if (_profileType == "edmm")    { SET_PROFILE(3);  }
+  if      (_profileType == "temperley")  { SET_PROFILE(0);  }
+  else if (_profileType == "shaath")     { SET_PROFILE(1);  }
+  else if (_profileType == "edma")       { SET_PROFILE(2);  }
+  else if (_profileType == "edmm")       { SET_PROFILE(3);  }
   else {
     throw EssentiaException("KeyEDM: Unsupported profile type: ", _profileType);
   }
