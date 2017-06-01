@@ -1,4 +1,4 @@
-## edmkey algorithm ECIR 2016
+## edmkey - ECIR 2016
 
 This repository contains python scripts to replicate the key detection experiments reported in the following paper:
 
