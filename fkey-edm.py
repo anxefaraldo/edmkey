@@ -45,9 +45,9 @@ HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 AVOID_TIME_EDGES             = 0          # percentage of track-length not analysed on the edges.
 FIRST_N_SECS                 = 0         # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
-KEY_PROFILE                  = 'bmtg3'    # {'edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3'}
-USE_THREE_PROFILES           = True
-WITH_MODAL_DETAILS           = True
+KEY_PROFILE                  = 'edma'    # {'edma', 'edmm', 'braw', 'bgate'}
+USE_THREE_PROFILES           = False
+WITH_MODAL_DETAILS           = False
 
 
 # ===================== #
