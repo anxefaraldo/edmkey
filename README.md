@@ -1,38 +1,13 @@
-## fkey-edm (MIREX 16 submission)
+## keyest-paper
 
-Algorithm for automatic key detection in EDM.
+This repository contains python scripts to replicate the key detection experiments reported in the following paper:
 
-### Dependencies
+**Faraldo, Á., Gómez, E., Jordà, S., & Herrera, P.** (2016). Key Estimation in Electronic Dance Music.
+In N. Ferro (Ed.), *Proceedings of the 38th European Conference on Information Retrieval, LCNS 9626* (pp. 335–347). Padua.
 
-In order to run or compile the algorithm you need.
+### Installation
 
-- Python >= 2.6
-- Numpy >= 
-- Essentia (http://essentia.upf.edu/)
+The method and code are programmed in *Essentia*, a library for Music Information Retrieval written in C++. 
+Download and build instructions for the most recent version are available at:
 
-We are actually using our own fork of essentia, which you can find here:
-
-*https://github.com/angelfaraldo/essentia*
-
-However, if you just prefer to use the latest essentia-master, you can copy the files in the "essentia" folder in this repository onto "/essentia/src/algorithms/tonal" and then build and compile. They are exclusive algorithms and will not overwrite any of the default ones.
-
-Detailed instructions to build essentia can be found on the essentia site:
-
-*http://essentia.upf.edu/documentation/installing.html*
-
-### Compiling as executable
-
-The script can be compiled onto an executable using pyinstaller. You can install it via pip,
-
-$ pip install pyinstaller
-
-and then, in the fkey-edm folder, generate the executable with the following command:
-
-$ pyinstaller fkey-edm.py
-
-The new fkey-edm executable will be located in './dist/fkey-edm'
-
-
-### Extras
-
-Additionally, we provide a simple python script to evaluate the results of the algorithm according to the MIREX competition.
+http://essentia.upf.edu/
