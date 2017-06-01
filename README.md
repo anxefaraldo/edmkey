@@ -1,4 +1,4 @@
-## fkey-edm (MIREX 16 submission)
+## fkey-edm and fkey algorithms (MIREX 16 submission)
 
 Algorithm for automatic key detection in EDM.
 
@@ -6,7 +6,7 @@ Algorithm for automatic key detection in EDM.
 
 In order to run or compile the algorithm you need.
 
-- Python >= 2.6
+- Python >= 2.6 (Does not work with Python 3)
 - Numpy >= 
 - Essentia (http://essentia.upf.edu/)
 
