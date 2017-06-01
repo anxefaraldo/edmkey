@@ -16,14 +16,12 @@ SAMPLE_RATE                  = 44100
 VALID_FILE_TYPES             = {'.wav', '.mp3', 'flac', '.aiff', '.ogg'}
 
 # Analysis Parameters
-# -------------------
-HIGHPASS_CUTOFF              = 200
+# ------------------
 SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
-PCP_THRESHOLD                = 0.66       # set to 0 to bypass parameter
 WINDOW_SIZE                  = 4096
-HOP_SIZE                     = 4096
+HOP_SIZE                     = 4 * WINDOW_SIZE
 WINDOW_SHAPE                 = 'hann'
 MIN_HZ                       = 25
 MAX_HZ                       = 3500
@@ -45,10 +43,7 @@ HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 AVOID_TIME_EDGES             = 0          # percentage of track-length not analysed on the edges.
 FIRST_N_SECS                 = 0         # analyse first n seconds of each track (0 = full track)
 SKIP_FIRST_MINUTE            = False
-KEY_PROFILE                  = 'edma'    # {'edma', 'edmm', 'braw', 'bgate'}
-USE_THREE_PROFILES           = False
-WITH_MODAL_DETAILS           = False
-
+KEY_PROFILE                  = 'edma'    # "{temperley, shaath, edma, edmm}"
 
 # ===================== #
 # FUNCTION DECLARATIONS #
@@ -111,11 +106,8 @@ def estimate_key(input_audio_file, output_text_file):
                              sampleRate=SAMPLE_RATE)
     cut = estd.FrameCutter(frameSize=WINDOW_SIZE,
                            hopSize=HOP_SIZE)
-    hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF,
-                        sampleRate=SAMPLE_RATE)
     window = estd.Windowing(size=WINDOW_SIZE,
-                            type=WINDOW_SHAPE,
-                            zeroPhase=False)
+                            type=WINDOW_SHAPE)
     rfft = estd.Spectrum(size=WINDOW_SIZE)
     sw = estd.SpectralWhitening(maxFrequency=MAX_HZ,
                                 sampleRate=SAMPLE_RATE)
@@ -137,13 +129,8 @@ def estimate_key(input_audio_file, output_text_file):
                      weightType=HPCP_WEIGHT_TYPE,
                      windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
                      maxShifted=HPCP_SHIFT)
-    if USE_THREE_PROFILES:
-        key_1 = estd.KeyEDM3(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
-    else:
-        key_1 = estd.KeyEDM(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
-    if WITH_MODAL_DETAILS:
-        key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
-    audio = hpf(hpf(hpf(loader())))
+    key = estd.KeyEDM(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
+    audio = loader()
     duration = len(audio)
     chroma = []
     if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
@@ -165,7 +152,6 @@ def estimate_key(input_audio_file, output_text_file):
         if SPECTRAL_WHITENING:
             p2 = sw(spek, p1, p2)
         pcp = hpcp(p1, p2)
-        pcp = pcp_gate(pcp, PCP_THRESHOLD)
         sum_pcp = np.sum(pcp)
         if sum_pcp > 0:
             if not DETUNING_CORRECTION or DETUNING_CORRECTION_SCOPE == 'average':
@@ -181,21 +167,8 @@ def estimate_key(input_audio_file, output_text_file):
     if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
         chroma = shift_pcp(list(chroma), HPCP_SIZE)
     chroma = chroma.tolist()
-    estimation_1 = key_1(chroma)
-    key_1 = estimation_1[0] + '\t' + estimation_1[1]
-    if WITH_MODAL_DETAILS:
-        estimation_2 = key_2(chroma)
-        key_2 = estimation_2[0] + '\t' + estimation_2[1]
-    if WITH_MODAL_DETAILS:
-        key_verbose = key_1 + '\t' + key_2
-        key = key_verbose.split('\t')
-        # SIMPLE RULES BASED ON THE MULTIPLE ESTIMATIONS TO IMPROVE THE RESULTS:
-        if key[3] == 'monotonic' and key[0] == key[2]:
-            key = '{0}\tminor'.format(key[0])
-        else:
-            key = "{0}\t{1}".format(key[0], key[1])
-    else:
-        key = key_1
+    estimation_1 = key(chroma)
+    key = estimation_1[0] + '\t' + estimation_1[1]
     textfile = open(output_text_file, 'w')
     textfile.write(key + '\n')
     textfile.close()
@@ -219,6 +192,8 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--verbose",
                         action="store_true",
                         help="print progress to console")
+    parser.add_argument("-p", "--specify a key profile",
+                        help="specify a key template (temperley, shaat, edma, edmm). Defaults to edma")
     args = parser.parse_args()
 
     if not args.batch_mode:
