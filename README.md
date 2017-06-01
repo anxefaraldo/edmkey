@@ -1,4 +1,4 @@
-## keyest-paper
+## edmkey algorithm ECIR 2016
 
 This repository contains python scripts to replicate the key detection experiments reported in the following paper:
 
@@ -7,7 +7,8 @@ In N. Ferro (Ed.), *Proceedings of the 38th European Conference on Information R
 
 ### Installation
 
-The method and code are programmed in *Essentia*, a library for Music Information Retrieval written in C++. 
-Download and build instructions for the most recent version are available at:
+The method and code are programmed in *Essentia*, a library for Music Information Retrieval written in C++.
+Since essentia is an ongrowing project, we have included our own version with this repository. 
+Access the essentia folder and follow the instructions in the following website to build and compile:
 
-http://essentia.upf.edu/
+http://essentia.upf.edu/documentation/installing.html
