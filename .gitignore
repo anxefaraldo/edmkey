@@ -4,8 +4,6 @@
 *.pyc
 .idea
 build
-dist
-*.spec
 .sconsign.dblite
 *.idb
 *~
@@ -85,3 +83,4 @@ packaging/win32_3rdparty/bin
 packaging/win32_3rdparty/share
 packaging/win32_3rdparty/lib
 packaging/win32_3rdparty/include
+
