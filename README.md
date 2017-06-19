@@ -1,14 +1,13 @@
-# edmkey
+## edmkey - AES 2017
 
-Python script for automatic key detection in EDM
+This repository contains python scripts to replicate the key detection experiments reported in the following paper:
 
-This repository provides scripts for key detection and its evaluation. They are based on a fork of MTG's Music Information Retrieval Library "Essentia" which can be downloaded from the following link:
+**Faraldo, Jordà, S., & Herrera, P.** (2017). A Multi-Profile Method for Key Estimation in EDM. *Audio Engineering Society Conference on Semantic Audio. Erlangen, Germany.
 
-https://github.com/angelfaraldo/essentia
+### Installation
 
-You can follow instructions of that page, or visit the home page of
-Essentia (http://essentia.upf.edu/) for further information about the
-library and how to build it and install it. Detailed instructions and
-dependencies here:
+The method and code are programmed in *Essentia*, a library for Music Information Retrieval written in C++.
+Since essentia is an ongrowing project, we have included a frozen version with this repository. 
+Access the essentia folder and follow the instructions in essentia's website to build and compile:
 
 http://essentia.upf.edu/documentation/installing.html
