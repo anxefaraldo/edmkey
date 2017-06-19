@@ -213,11 +213,8 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--verbose",
                         action="store_true",
                         help="print progress to console")
-    parser.add_argument("-x", "--extra",
-                        action="store_true",
-                        help="generate extra analysis files")
-    parser.add_argument("-c", "--conf_file",
-                        help="specify a different configuration file")
+    parser.add_argument("-p", "--profile",
+                        help="specify a key template (braw, bgate, edma, edmm).")
     args = parser.parse_args()
 
     if not args.batch_mode:
@@ -241,7 +238,7 @@ if __name__ == "__main__":
                 print("\nWARNING:")
                 print("It seems that you are trying to replace an existing file")
                 print("In batch_mode, the output argument must be a directory".format(args.output))
-                print("Type 'fkey -h' for help\n")
+                print("Type 'edmkey -h' for help\n")
                 sys.exit()
             output_dir = results_directory(args.output)
             list_all_files = os.listdir(args.input)
