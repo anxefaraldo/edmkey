@@ -31,7 +31,7 @@ HPCP_BAND_PRESET             = False
 HPCP_SPLIT_HZ                = 250       # if HPCP_BAND_PRESET is True
 HPCP_HARMONICS               = 4
 HPCP_NON_LINEAR              = True
-HPCP_NORMALIZE               = True
+HPCP_NORMALIZE               = 'unitMax'  # {'unitMax', 'unitSum'}
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
 HPCP_SIZE                    = 36
@@ -125,7 +125,7 @@ def estimate_key(input_audio_file, output_text_file):
                      referenceFrequency=HPCP_REFERENCE_HZ,
                      sampleRate=SAMPLE_RATE,
                      size=HPCP_SIZE,
-                     splitFrequency=HPCP_SPLIT_HZ,
+                     bandSplitFrequency=HPCP_SPLIT_HZ,
                      weightType=HPCP_WEIGHT_TYPE,
                      windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
                      maxShifted=HPCP_SHIFT)
