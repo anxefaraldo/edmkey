@@ -206,6 +206,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    if args.profile:
+        KEY_PROFILE = args.profile
+    if args.verbose:
+        print('Key profile used:', KEY_PROFILE)
+
     if not args.batch_mode:
         if not os.path.isfile(args.input):
             print("\nWARNING:")

@@ -34,7 +34,7 @@ HPCP_BAND_PRESET             = False
 HPCP_SPLIT_HZ                = 250       # if HPCP_BAND_PRESET is True
 HPCP_HARMONICS               = 4
 HPCP_NON_LINEAR              = False
-HPCP_NORMALIZE               = False    # {none, unitSum, unitMax} # True???
+HPCP_NORMALIZE               = 'none'
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
 HPCP_SIZE                    = 12
@@ -128,7 +128,7 @@ def estimate_key(input_audio_file, output_text_file):
                                 maxPeaks=SPECTRAL_PEAKS_MAX,
                                 sampleRate=SAMPLE_RATE)
     hpcp = estd.HPCP(bandPreset=HPCP_BAND_PRESET,
-                     splitFrequency=HPCP_SPLIT_HZ, # was bandSplitFrequency
+                     bandSplitFrequency=HPCP_SPLIT_HZ,
                      harmonics=HPCP_HARMONICS,
                      maxFrequency=MAX_HZ,
                      minFrequency=MIN_HZ,
