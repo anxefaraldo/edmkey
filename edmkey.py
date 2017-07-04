@@ -4,7 +4,7 @@
 
 import os, sys
 import essentia.standard as estd
-from template_matching import *
+from templates import *
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #
